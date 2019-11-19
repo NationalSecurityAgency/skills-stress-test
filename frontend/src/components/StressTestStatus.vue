@@ -1,0 +1,62 @@
+<template>
+    <div v-if="status" class="card">
+        <div class="card-header text-left text-uppercase text-primary">
+            <h5>STRESS TEST RUN<span class="float-right text-muted">Running: <span class="text-success">{{running || false }}</span></span></h5>
+        </div>
+        <div class="card-body">
+            <div v-if="status.reportSkillsRes">
+                <div class="row mb-4">
+                    <div class="col">
+                        <p class="text-uppercase text-muted count-label">Events</p>
+                        <strong class="h5">{{ status.reportSkillsRes.totalEvents | number }}</strong>
+                    </div>
+                    <div class="col">
+                        <p class="text-uppercase text-muted count-label">Exec Time</p>
+                        <strong class="h5">{{ status.reportSkillsRes.totalExecTime | number }}</strong>
+                    </div>
+                </div>
+
+                <div class="row text-left">
+                    <div class="col-lg border rounded p-3 mr-2">
+                        <h5 class="text-uppercase">Overall</h5>
+                        <div class="mb-2">Average Response Time: <span class="text-info">{{ status.reportSkillsRes.avgEventResponse }} ms</span>
+                        </div>
+                        <b-table striped hover :items="status.reportSkillsRes.groupedExecTimes">
+                            <template v-slot:cell(numberOfEvents)="numberOfEvents">
+                                {{ formatNum(numberOfEvents.value) }}
+                            </template>
+                        </b-table>
+                    </div>
+                    <div class="col-lg border rounded p-3">
+                        <h5 class="text-uppercase">Last 1K</h5>
+                        <div class="mb-2">Average Response Time: <span class="text-info">{{ status.reportSkillsRes.avgEventResponseLast1k }} ms</span>
+                        </div>
+                        <b-table striped hover :items="status.reportSkillsRes.groupedExecTimesLast1k">
+                            <template v-slot:cell(numberOfEvents)="numberOfEvents">
+                                {{ formatNum(numberOfEvents.value) }}
+                            </template>
+                        </b-table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    import NumberFilter from "../filters/NumberFilter";
+
+    export default {
+        name: "StressTestStatus",
+        props: ['status', 'running'],
+        methods: {
+            formatNum(numVal) {
+                return NumberFilter(numVal);
+            },
+        },
+    }
+</script>
+
+<style scoped>
+
+</style>
