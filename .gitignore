@@ -1,0 +1,4 @@
+/.idea/
+/backend/.mvn/wrapper/
+/backend/target/
+/backend/backend.iml
