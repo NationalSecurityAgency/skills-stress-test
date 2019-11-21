@@ -1,6 +1,7 @@
-package skills.stress
+package skills.stress.services
 
-import skills.intTests.utils.SkillsService
+import skills.stress.CreateSkillsDef
+import skills.stress.services.SkillsService
 import skills.stress.users.UserIdFactory
 
 class SkillServiceFactory {
@@ -16,7 +17,7 @@ class SkillServiceFactory {
         String projectId = CreateSkillsDef.getProjectId(projectIndex)
         SkillsService service = cache.get(projectId)
         if (!service) {
-            service = new SkillsService("CN=dimay, OU=skills.org, O=Skills, L=SomeCity, ST=SomeState, C=CC", "password", "First", "Last", serviceUrl, pkiMode)
+            service = new SkillsService(serviceUrl: serviceUrl)
             cache.put(projectId, service)
         }
         return service

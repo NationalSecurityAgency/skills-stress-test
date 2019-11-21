@@ -2,9 +2,8 @@ package skills.stress
 
 import callStack.profiler.ProfThreadPool
 import groovy.util.logging.Slf4j
-import org.springframework.http.ResponseEntity
-import org.springframework.web.client.RestTemplate
-import skills.intTests.utils.SkillsService
+import skills.stress.services.SkillServiceFactory
+import skills.stress.services.SkillsService
 import skills.stress.users.FileBasedUserIdFactory
 import skills.stress.users.UserIdFactory
 
@@ -19,7 +18,10 @@ class SimpleMain {
 
         UserIdFactory userIdFactory = new FileBasedUserIdFactory("/home/dimay/dev/testData/pkiUsers.txt")
         SkillServiceFactory factory = new SkillServiceFactory(serviceUrl: "https://localhost:8443", pkiMode: true, userIdFactory: userIdFactory)
-        SkillsService service = factory.getServiceByProjectIndex(1)
+//        SkillsService service = factory.getServiceByProjectIndex(1)
+
+//        SkillsServiceUh serviceUh = new SkillsServiceUh()
+//        serviceUh.createProj()
 
 //        CreateSkillsDef.Proj proj = projs.first()
 //        service.createProject([projectId: proj.id, name: proj.name])

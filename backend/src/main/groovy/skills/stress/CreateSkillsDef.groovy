@@ -3,7 +3,8 @@ package skills.stress
 import callStack.profiler.ProfThreadPool
 import groovy.transform.ToString
 import groovy.util.logging.Slf4j
-import skills.intTests.utils.SkillsService
+import skills.stress.services.SkillServiceFactory
+import skills.stress.services.SkillsService
 
 import java.util.concurrent.Callable
 import java.util.concurrent.atomic.AtomicLong

@@ -2,10 +2,10 @@ package skills.stress
 
 import callStack.profiler.ProfThreadPool
 import groovy.util.logging.Slf4j
-import skills.intTests.utils.SkillsClientException
-import skills.intTests.utils.SkillsService
 import skills.stress.model.ReportSkillsRes
 import skills.stress.model.StatusRes
+import skills.stress.services.SkillServiceFactory
+import skills.stress.services.SkillsService
 import skills.stress.users.FileBasedUserIdFactory
 import skills.stress.users.SimpleUserIdFactory
 import skills.stress.users.DateFactory
@@ -109,18 +109,18 @@ class HitSkillsHard {
                 CreateSkillsDef.RandomLookupKey randomLookupKey = createSkillsDef.randomLookupKey()
                 SkillsService service = skillServiceFactory.getServiceByProjectIndex(randomLookupKey.projIndex)
                 statsHelper.startEvent()
-                try {
+//                try {
                     service.addSkill([projectId: randomLookupKey.projId, skillId: randomLookupKey.skillId], userIdFactory.userId, userAndDateFactory.date)
-                } catch (SkillsClientException skillsClientException) {
-                    if (skillsClientException.message.contains("Skill definition does not exist.")) {
-                        // addresses scenario where a project was created but then config changed to increase number of skill defs
-                        log.error("Thread [${Thread.currentThread().name}] Swallowed", skillsClientException)
-                    } else {
-                        log.error("Thread [${Thread.currentThread().name}] Throwing Exception", skillsClientException)
-                        throw skillsClientException
-                    }
-
-                }
+//                } catch (SkillsClientException skillsClientException) {
+//                    if (skillsClientException.message.contains("Skill definition does not exist.")) {
+//                        // addresses scenario where a project was created but then config changed to increase number of skill defs
+//                        log.error("Thread [${Thread.currentThread().name}] Swallowed", skillsClientException)
+//                    } else {
+//                        log.error("Thread [${Thread.currentThread().name}] Throwing Exception", skillsClientException)
+//                        throw skillsClientException
+//                    }
+//
+//                }
                 statsHelper.endEvent()
             }
         } catch (Exception e) {

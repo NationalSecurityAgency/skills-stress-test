@@ -9,33 +9,11 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
+        <module>frontend</module>
         <module>backend</module>
     </modules>
     <properties>
-<!--        <nexusServer></nexusServer>-->
-<!--        <main.basedir>${project.basedir}</main.basedir>-->
-<!--        <java.version>1.11</java.version>-->
-
-<!--        &lt;!&ndash; can NOT name it groovy.version as spock's dependency picks it up&ndash;&gt;-->
-<!--        <groovy.version>2.5.7</groovy.version>-->
-<!--        <groovy.eclipse.compiler.version>3.0.0-01</groovy.eclipse.compiler.version>-->
-<!--        <groovy.eclipse.batch.version>2.5.1-02</groovy.eclipse.batch.version>-->
-
-<!--        <spock.myVersion>1.3-groovy-2.5</spock.myVersion>-->
-<!--        <java.version>1.8</java.version>-->
-<!--        &lt;!&ndash; when changing the springboot.version property, make sure you also change it in the parent definition &ndash;&gt;-->
-<!--        <springboot.version>2.1.6.RELEASE</springboot.version>-->
-
-<!--        <flywaydb.version>5.2.1</flywaydb.version>-->
-
-<!--        <commons.lang.version>3.7</commons.lang.version>-->
-<!--        <commons.collections.version>3.2.2</commons.collections.version>-->
-<!--        <commons.io.version>2.6</commons.io.version>-->
-
-<!--        <frontend-maven-plugin.version>1.7.6</frontend-maven-plugin.version>-->
-<!--        <node.version>v11.6.0</node.version>-->
-
-<!--        <httpclient.version>4.5.6</httpclient.version>-->
+        <node.version>v11.6.0</node.version>
     </properties>
 
     <parent>
@@ -45,22 +23,5 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-
-    <distributionManagement>
-        <repository>
-            <id>release</id>
-            <name>Release Repository</name>
-            <url>
-                ${nexusServer}/repository/maven-releases/
-            </url>
-        </repository>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <name>Snapshot Repository</name>
-            <url>
-                ${nexusServer}/repository/maven-snapshots/
-            </url>
-        </snapshotRepository>
-    </distributionManagement>
 
 </project>

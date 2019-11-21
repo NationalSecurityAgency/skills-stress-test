@@ -29,3 +29,6 @@ build/
 
 ### VS Code ###
 .vscode/
+/src/main/resources/public/static/
+/src/main/resources/public/index.html
+/src/main/resources/public/skills.ico
