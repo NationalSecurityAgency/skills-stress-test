@@ -6,6 +6,10 @@ import skills.intTests.utils.SkillsClientException
 import skills.intTests.utils.SkillsService
 import skills.stress.model.ReportSkillsRes
 import skills.stress.model.StatusRes
+import skills.stress.users.FileBasedUserIdFactory
+import skills.stress.users.SimpleUserIdFactory
+import skills.stress.users.DateFactory
+import skills.stress.users.UserIdFactory
 
 import java.util.concurrent.Callable
 import java.util.concurrent.Future
@@ -23,11 +27,14 @@ class HitSkillsHard {
     int numConcurrentThreads = 5
     boolean removeExistingTestProjects = false
     String serviceUrl = "http://localhost:8080"
+    boolean pkiMode = false
+    String pkiModeUserIdFilePath
 
     private AtomicBoolean shouldRun = new AtomicBoolean(true)
-
+    private boolean hasFailures = false
     CreateSkillsDef createSkillsDef
-    UserAndDateFactory userAndDateFactory
+    DateFactory userAndDateFactory
+    UserIdFactory userIdFactory
     SkillServiceFactory skillServiceFactory
 
     void stop() {
@@ -39,7 +46,19 @@ class HitSkillsHard {
     }
 
     HitSkillsHard init() {
-        skillServiceFactory = new SkillServiceFactory(serviceUrl: serviceUrl)
+        if (pkiMode) {
+            userIdFactory = new FileBasedUserIdFactory(pkiModeUserIdFilePath)
+            if (numProjects > userIdFactory.numUsers()){
+                throw new IllegalArgumentException("In PKI Mode must not supply more projects than actual users. [$numProjects] > [${userIdFactory.numUsers()}]")
+            }
+        } else {
+            userIdFactory = new SimpleUserIdFactory(numUsers: numUsersPerApp)
+        }
+        userAndDateFactory = new DateFactory(
+                numDates: 365
+        )
+
+        skillServiceFactory = new SkillServiceFactory(serviceUrl: serviceUrl, pkiMode: pkiMode, userIdFactory: userIdFactory)
 
         createSkillsDef = new CreateSkillsDef(
                 numProjects: numProjects,
@@ -51,17 +70,18 @@ class HitSkillsHard {
                 skillServiceFactory: skillServiceFactory,
         )
 
-        userAndDateFactory = new UserAndDateFactory(
-                numUsers: numUsersPerApp,
-                numDates: 365
-        )
-
         return this;
     }
 
     void run() {
         printSetupParams()
-        createSkillsDef.create()
+        try {
+            createSkillsDef.create()
+        } catch (Throwable t){
+            hasFailures = true;
+            shouldRun.set(false)
+            throw t;
+        }
 
         ProfThreadPool profThreadPool = new ProfThreadPool("reportEventsPool", numConcurrentThreads)
         profThreadPool.warnIfFull = false
@@ -84,23 +104,19 @@ class HitSkillsHard {
 
     void reportEvents() {
         try {
-            println "Thread started"
+            log.info("Thread [{}] started", Thread.currentThread().name)
             while (shouldRun.get()) {
                 CreateSkillsDef.RandomLookupKey randomLookupKey = createSkillsDef.randomLookupKey()
-                while (randomLookupKey.projId == "Project90") {
-                    randomLookupKey = createSkillsDef.randomLookupKey()
-                }
-
-                SkillsService service = skillServiceFactory.getService(randomLookupKey.projId)
+                SkillsService service = skillServiceFactory.getServiceByProjectIndex(randomLookupKey.projIndex)
                 statsHelper.startEvent()
                 try {
-                    service.addSkill([projectId: randomLookupKey.projId, skillId: randomLookupKey.skillId], userAndDateFactory.userId, userAndDateFactory.date)
+                    service.addSkill([projectId: randomLookupKey.projId, skillId: randomLookupKey.skillId], userIdFactory.userId, userAndDateFactory.date)
                 } catch (SkillsClientException skillsClientException) {
                     if (skillsClientException.message.contains("Skill definition does not exist.")) {
-                        // that's ok
-                        log.error("Swallowed", skillsClientException)
+                        // addresses scenario where a project was created but then config changed to increase number of skill defs
+                        log.error("Thread [${Thread.currentThread().name}] Swallowed", skillsClientException)
                     } else {
-                        log.error("Throwing Exception", skillsClientException)
+                        log.error("Thread [${Thread.currentThread().name}] Throwing Exception", skillsClientException)
                         throw skillsClientException
                     }
 
@@ -108,9 +124,11 @@ class HitSkillsHard {
                 statsHelper.endEvent()
             }
         } catch (Exception e) {
-            log.error("Failed Thread", e)
+            shouldRun.set(false)
+            hasFailures = true
+            log.error("Thread [${Thread.currentThread().name}] FAILED", e)
         } finally {
-            log.info("Thread Finished")
+            log.info("Thread [{}] Finished", Thread.currentThread().name)
         }
     }
 
@@ -118,6 +136,7 @@ class HitSkillsHard {
     StatusRes buildStatus() {
         ReportSkillsRes reportSkillsRes = statsHelper.buildStatus()
         new StatusRes(
+                hasFailures: hasFailures,
                 running: isRunning(),
                 reportSkillsRes: reportSkillsRes,
         )

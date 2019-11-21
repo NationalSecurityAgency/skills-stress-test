@@ -1,6 +1,7 @@
 package skills.stress
 
 import callStack.profiler.ProfThreadPool
+import groovy.transform.ToString
 import groovy.util.logging.Slf4j
 import skills.intTests.utils.SkillsService
 
@@ -29,7 +30,7 @@ class CreateSkillsDef {
         List<Proj> projDef = createDef()
         projDef.each {
             String projId = it.id
-            SkillsService service = skillServiceFactory.getService(projId)
+            SkillsService service = skillServiceFactory.getServiceByProjectIndex(it.projIndex)
             def projects = service.getProjects()
             if (projects?.find({it.projectId == projId})) {
                 service.deleteProject(projId)
@@ -37,23 +38,28 @@ class CreateSkillsDef {
         }
     }
 
+    @ToString
     static class Proj {
+        Integer projIndex
         String id
         String name
         List<Subj> subjs = []
         List<Badge> badges = []
         boolean hasDependencies
     }
+    @ToString
     static class Subj {
         String id
         String name
         List<Skill> skills = []
     }
+    @ToString
     static class Badge {
         String id
         String name
         List<Skill> skills = []
     }
+    @ToString
     static class Skill {
         String id
         String name
@@ -65,7 +71,7 @@ class CreateSkillsDef {
         List<Proj> res = []
         (1..numProjects).each { int projNum ->
             String projId = getProjectId(projNum)
-            Proj proj = new Proj(id: projId, name: "Test Project ${projNum}".toString(), hasDependencies: projNum % hasDependenciesEveryNProjects == 0)
+            Proj proj = new Proj(projIndex: projNum, id: projId, name: "Test Project ${projNum}".toString(), hasDependencies: projNum % hasDependenciesEveryNProjects == 0)
             res << proj
             (1..subjPerProject).each { int subjNum ->
                 String subjId = getSubjId(projNum, subjNum)
@@ -126,6 +132,7 @@ class CreateSkillsDef {
     }
 
     static class RandomLookupKey {
+        Integer projIndex
         String projId
         String skillId
     }
@@ -137,6 +144,7 @@ class CreateSkillsDef {
         int randomSubjNum = r.nextInt(subjPerProject) + 1
         int randomSkillNum = r.nextInt(skillsPerSubject) + 1
         new RandomLookupKey(
+                projIndex: randomProjNum,
                 projId: getProjectId(randomProjNum),
                 skillId: getSkillId(randomProjNum, randomSubjNum, randomSkillNum)
         )
@@ -154,7 +162,7 @@ class CreateSkillsDef {
         "Proj${projNum}Subj${subjNum}Skill${skillNum}".toString()
     }
 
-    private String getProjectId(Integer projNum) {
+    static String getProjectId(Integer projNum) {
         "Project${projNum}".toString()
     }
 
@@ -162,7 +170,15 @@ class CreateSkillsDef {
         projDefs = projDefs ?: createDef()
         List<Callable> callables = projDefs.collect() { Proj proj ->
             { ->
-                saveProject(proj)
+                try {
+                    log.info("Thread [{}] started", Thread.currentThread().name)
+                    saveProject(proj)
+                } catch (Throwable t) {
+                    log.error("Thread [${Thread.currentThread().name}] FAILED", t)
+                    throw t
+                } finally {
+                    log.info("Thread [{}] finished", Thread.currentThread().name)
+                }
                 return proj
             } as Callable
         }
@@ -181,7 +197,7 @@ class CreateSkillsDef {
     AtomicLong counter = new AtomicLong(0)
 
     private List saveProject(Proj proj) {
-        SkillsService service = skillServiceFactory.getService(proj.id)
+        SkillsService service = skillServiceFactory.getServiceByProjectIndex(proj.projIndex)
 
         if (!service.projectIdExists([projectId: proj.id])) {
             service.createProject([projectId: proj.id, name: proj.name])
