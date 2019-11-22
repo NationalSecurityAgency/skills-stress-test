@@ -19,6 +19,7 @@ class CreateSkillsDef {
     boolean remove = false;
     int hasDependenciesEveryNProjects = 3
     SkillServiceFactory skillServiceFactory
+    String prependToDescription = ""
 
     List<Proj> create(){
         if(remove) {
@@ -204,13 +205,16 @@ class CreateSkillsDef {
             service.createProject([projectId: proj.id, name: proj.name])
             proj.subjs.each { Subj subj ->
                 String subjId = subj.id
-                service.createSubject([projectId: proj.id, subjectId: subjId, name: subj.name.toString()])
+                service.createSubject([projectId: proj.id,
+                                       subjectId: subjId,
+                                       name: subj.name.toString(),
+                                       description: "${prependToDescription}Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.".toString()])
                 subj.skills.each { Skill skill ->
                     service.createSkill([projectId  : proj.id, subjectId: subjId, skillId: skill.id,
                                          name       : skill.name,
                                          type       : "Skill", pointIncrement: 10, numPerformToCompletion: 10, pointIncrementInterval: 8 * 60, numMaxOccurrencesIncrementInterval: 2,
                                          version    : 0,
-                                         description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+                                         description: "${prependToDescription}Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.".toString()
                     ])
                     long value = counter.incrementAndGet()
                     if (value > 9 && value % 25 == 0) {
@@ -220,9 +224,14 @@ class CreateSkillsDef {
             }
 
             proj.badges.each { Badge badge ->
-                service.createBadge([projectId: proj.id, badgeId: badge.id, name: badge.name])
+                service.createBadge([projectId: proj.id,
+                                     badgeId: badge.id,
+                                     name: badge.name,
+                                     description: "${prependToDescription}Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.".toString()])
                 badge.skills.each {
-                    service.assignSkillToBadge([projectId: proj.id, badgeId: badge.id, skillId: it.id])
+                    service.assignSkillToBadge([projectId: proj.id,
+                                                badgeId: badge.id,
+                                                skillId: it.id,])
                 }
             }
 

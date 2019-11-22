@@ -29,6 +29,7 @@ class HitSkillsHard {
     String serviceUrl = "http://localhost:8080"
     boolean pkiMode = false
     String pkiModeUserIdFilePath
+    String prependToDescription = ""
 
     private AtomicBoolean shouldRun = new AtomicBoolean(true)
     private boolean hasFailures = false
@@ -68,6 +69,7 @@ class HitSkillsHard {
                 hasDependenciesEveryNProjects: hasDependenciesEveryNProjects,
                 remove: removeExistingTestProjects,
                 skillServiceFactory: skillServiceFactory,
+                prependToDescription: prependToDescription,
         )
 
         return this;

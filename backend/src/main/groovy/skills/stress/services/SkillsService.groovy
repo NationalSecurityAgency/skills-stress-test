@@ -1,6 +1,6 @@
 package skills.stress.services
 
-
+import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestTemplate
@@ -18,10 +18,11 @@ class SkillsService {
         return responseEntity.body
     }
 
+    JsonSlurper jsonSlurper = new JsonSlurper()
     private def get(String url){
         ResponseEntity<String> responseEntity =
                 restTemplate.getForEntity(url.toString(), String)
-        return responseEntity.body
+        return jsonSlurper.parseText(responseEntity.body)
     }
 
     def createProject(Map params) {

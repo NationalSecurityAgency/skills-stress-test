@@ -30,6 +30,9 @@ class StressTestsController {
     @Value('#{"${skills.stress.pkiMode.userIdsFile}"}')
     String pkiModeUserIdsFilePath
 
+    @Value('#{"${skills.stress.prependToDescription}"}')
+    String prependToDescription
+
     HitSkillsHard hitSkillsHard
 
     @PostConstruct
@@ -62,7 +65,8 @@ class StressTestsController {
                 removeExistingTestProjects: params.removeExistingTestProjects,
                 serviceUrl: stressTestParams.serviceUrl,
                 pkiMode: pkiMode,
-                pkiModeUserIdFilePath: pkiModeUserIdsFilePath
+                pkiModeUserIdFilePath: pkiModeUserIdsFilePath,
+                prependToDescription: prependToDescription,
         ).init()
         hitSkillsHard.run()
 
