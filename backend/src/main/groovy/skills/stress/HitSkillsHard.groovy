@@ -2,10 +2,12 @@ package skills.stress
 
 import callStack.profiler.ProfThreadPool
 import groovy.util.logging.Slf4j
-import skills.stress.model.ReportSkillsRes
+import skills.stress.model.StatsRes
 import skills.stress.model.StatusRes
 import skills.stress.services.SkillServiceFactory
 import skills.stress.services.SkillsService
+
+import skills.stress.stats.StatsHelper
 import skills.stress.users.FileBasedUserIdFactory
 import skills.stress.users.SimpleUserIdFactory
 import skills.stress.users.DateFactory
@@ -14,6 +16,7 @@ import skills.stress.users.UserIdFactory
 import java.util.concurrent.Callable
 import java.util.concurrent.Future
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicInteger
 
 @Slf4j
 class HitSkillsHard {
@@ -32,6 +35,7 @@ class HitSkillsHard {
     String prependToDescription = ""
 
     private AtomicBoolean shouldRun = new AtomicBoolean(true)
+    private AtomicInteger numErrors = new AtomicInteger(0)
     private boolean hasFailures = false
     CreateSkillsDef createSkillsDef
     DateFactory userAndDateFactory
@@ -76,6 +80,7 @@ class HitSkillsHard {
     }
 
     void run() {
+        assert numConcurrentThreads > 1
         printSetupParams()
         try {
             createSkillsDef.create()
@@ -85,45 +90,63 @@ class HitSkillsHard {
             throw t;
         }
 
+        int numClientDisplayThreads = Math.max(1, (numConcurrentThreads * 0.2).toInteger())
+        int numReportEventThreads = numConcurrentThreads - numClientDisplayThreads
+        log.info("[{}] client display threads, [{}] report events threads", numClientDisplayThreads, numReportEventThreads)
+
         ProfThreadPool profThreadPool = new ProfThreadPool("reportEventsPool", numConcurrentThreads)
         profThreadPool.warnIfFull = false
 
         try {
-            List<Future> futures = numConcurrentThreads.times {
-                profThreadPool.submit({ ->
-                    reportEvents()
-                } as Callable);
+            List<Future> futures = []
+            numReportEventThreads.times {
+                futures.add(profThreadPool.submit({ -> reportEvents() } as Callable))
             }
+
+            numClientDisplayThreads.times {
+                futures.add(profThreadPool.submit({ -> clientDisplaySimulation() } as Callable))
+            }
+
             // recommended to use following statement to ensure the execution of all tasks.
-            futures.each { it.get() }
             log.info("Started All Threads")
+            futures.each { it.get() }
         } finally {
+            log.info("All Threads Completed")
             profThreadPool.shutdown()
         }
     }
 
     StatsHelper statsHelper = new StatsHelper()
+    StatsHelper clientDisplayStatsHelper = new StatsHelper()
 
     void reportEvents() {
+        performWorkInThread { SkillsService service, CreateSkillsDef.RandomLookupKey randomLookupKey ->
+            statsHelper.startEvent()
+            service.addSkill([projectId: randomLookupKey.projId, skillId: randomLookupKey.skillId], userIdFactory.userId, userAndDateFactory.date)
+            statsHelper.endEvent()
+        }
+    }
+
+    void clientDisplaySimulation() {
+        performWorkInThread { SkillsService service, CreateSkillsDef.RandomLookupKey randomLookupKey ->
+            clientDisplayStatsHelper.startEvent()
+            service.getClientDisplayProjectSummary(randomLookupKey.projId, userIdFactory.userId)
+            clientDisplayStatsHelper.endEvent()
+        }
+    }
+
+    private performWorkInThread(Closure work) {
         try {
             log.info("Thread [{}] started", Thread.currentThread().name)
             while (shouldRun.get()) {
                 CreateSkillsDef.RandomLookupKey randomLookupKey = createSkillsDef.randomLookupKey()
                 SkillsService service = skillServiceFactory.getServiceByProjectIndex(randomLookupKey.projIndex)
-                statsHelper.startEvent()
-//                try {
-                    service.addSkill([projectId: randomLookupKey.projId, skillId: randomLookupKey.skillId], userIdFactory.userId, userAndDateFactory.date)
-//                } catch (SkillsClientException skillsClientException) {
-//                    if (skillsClientException.message.contains("Skill definition does not exist.")) {
-//                        // addresses scenario where a project was created but then config changed to increase number of skill defs
-//                        log.error("Thread [${Thread.currentThread().name}] Swallowed", skillsClientException)
-//                    } else {
-//                        log.error("Thread [${Thread.currentThread().name}] Throwing Exception", skillsClientException)
-//                        throw skillsClientException
-//                    }
-//
-//                }
-                statsHelper.endEvent()
+                try {
+                    work.call(service, randomLookupKey)
+                } catch (Throwable t){
+                    log.error("Thread [${Thread.currentThread().name}] had failure", t)
+                    numErrors.incrementAndGet()
+                }
             }
         } catch (Exception e) {
             shouldRun.set(false)
@@ -134,13 +157,14 @@ class HitSkillsHard {
         }
     }
 
-
     StatusRes buildStatus() {
-        ReportSkillsRes reportSkillsRes = statsHelper.buildStatus()
+        StatsRes reportSkillsRes = statsHelper.buildStatus()
         new StatusRes(
+                numErrors: numErrors.get(),
                 hasFailures: hasFailures,
                 running: isRunning(),
                 reportSkillsRes: reportSkillsRes,
+                clientDisplayStats: clientDisplayStatsHelper.buildStatus()
         )
     }
 

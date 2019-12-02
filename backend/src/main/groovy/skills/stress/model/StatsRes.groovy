@@ -1,6 +1,6 @@
 package skills.stress.model
 
-class ReportSkillsRes {
+class StatsRes {
     long totalEvents
     long totalExecTime
     long totalExecTimeLast1k

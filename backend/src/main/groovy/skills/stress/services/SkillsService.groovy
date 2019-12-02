@@ -2,8 +2,16 @@ package skills.stress.services
 
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
+import org.apache.commons.io.IOUtils
+import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.client.ClientHttpResponse
+import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.client.ResponseErrorHandler
 import org.springframework.web.client.RestTemplate
+
+import java.nio.charset.Charset
 
 @Slf4j
 class SkillsService {
@@ -12,6 +20,34 @@ class SkillsService {
 
     RestTemplate restTemplate = new RestTemplate()
 
+    SkillsService() {
+        restTemplate.setErrorHandler(new ResponseErrorHandler() {
+            @Override
+            boolean hasError(ClientHttpResponse clientHttpResponse) throws IOException {
+                if (clientHttpResponse.getStatusCode() != HttpStatus.OK) {
+                    return true
+                }
+                return false
+            }
+
+            @Override
+            void handleError(ClientHttpResponse clientHttpResponse) throws IOException {
+
+            }
+
+            @Override
+            void handleError(URI url, HttpMethod method, ClientHttpResponse clientHttpResponse) throws IOException {
+                StringBuilder msg = new StringBuilder()
+                msg.append("RestTemplate go an error for [${method}] => [${url}]\n")
+                msg.append("Status code: [" + clientHttpResponse.getStatusCode() + "]\n");
+                msg.append("Response: [" + clientHttpResponse.getStatusText() + "]\n");
+                msg.append("Body: " + IOUtils.toString(clientHttpResponse.getBody(), Charset.defaultCharset()));
+                log.error(msg.toString());
+                throw new HttpClientErrorException(clientHttpResponse.statusCode, msg.toString())
+            }
+        })
+    }
+
     private def post(String url, Map params) {
         ResponseEntity<String> responseEntity =
                 restTemplate.postForEntity(url.toString(), params, String)
@@ -19,7 +55,8 @@ class SkillsService {
     }
 
     JsonSlurper jsonSlurper = new JsonSlurper()
-    private def get(String url){
+
+    private def get(String url) {
         ResponseEntity<String> responseEntity =
                 restTemplate.getForEntity(url.toString(), String)
         return jsonSlurper.parseText(responseEntity.body)
@@ -71,6 +108,14 @@ class SkillsService {
         String url = "${serviceUrl}/api/projects/${params.projectId}/skills/${params.skillId}"
 
         post(url, clientParams)
+    }
+
+    def getClientDisplayProjectSummary(String projId, String userId) {
+        get("${serviceUrl}/api/projects/${projId}/summary?userId=${userId}")
+    }
+
+    def getClientDisplaySubjectSummary(String projId, String subjId, String userId) {
+        get("${serviceUrl}/api/projects/${projId}/subjects/${subjId}/summary?userId=${userId}")
     }
 
 }

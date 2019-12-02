@@ -56,6 +56,12 @@
         </dependency>
 
         <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
+        </dependency>
+
+        <dependency>
             <groupId>profile</groupId>
             <artifactId>call-stack-profiler</artifactId>
             <version>1.0.0</version>

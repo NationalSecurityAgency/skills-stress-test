@@ -1,7 +1,9 @@
 package skills.stress.model
 
 class StatusRes {
+    int numErrors = 0
     boolean hasFailures = false;
     boolean running = false;
-    ReportSkillsRes reportSkillsRes
+    StatsRes reportSkillsRes
+    StatsRes clientDisplayStats
 }
