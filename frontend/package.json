@@ -1,28 +1,36 @@
 {
   "name": "frontend",
   "version": "0.1.0",
-  "private": true,
+  "license": "Apache-2.0",
+  "description": "SkillTree Dashboard UI",
+  "author": "SkillTree Team",
   "scripts": {
+    "licenseDepCheck": "license-checker --production --onlyAllow='MIT;Apache-2.0' --summary",
+    "licenseHeaderCheck": "license-check-and-add check -f '../license-add/license-add-config.json'",
+    "licenseHeaderAdd": "license-check-and-add add -f ../license-add/license-add-config.json",
+    "licenseCheck": "npm run licenseHeaderCheck && npm run licenseDepCheck",
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "npm run licenseCheck && vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "axios": "^0.19.0",
-    "bootstrap": "^4.3.1",
-    "bootstrap-vue": "^2.1.0",
-    "core-js": "^2.6.5",
-    "numeral": "^2.0.6",
-    "vue": "^2.6.10"
+    "axios": "0.19.2",
+    "bootstrap": "4.4.1",
+    "bootstrap-vue": "2.5.0",
+    "core-js": "2.6.11",
+    "numeral": "2.0.6",
+    "vue": "2.6.11"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.12.0",
-    "@vue/cli-plugin-eslint": "^3.12.0",
-    "@vue/cli-service": "^3.12.0",
-    "babel-eslint": "^10.0.1",
-    "eslint": "^5.16.0",
-    "eslint-plugin-vue": "^5.0.0",
-    "vue-template-compiler": "^2.6.10"
+    "@vue/cli-plugin-babel": "3.12.0",
+    "@vue/cli-plugin-eslint": "3.12.0",
+    "@vue/cli-service": "3.12.0",
+    "babel-eslint": "10.1.0",
+    "eslint": "5.16.0",
+    "eslint-plugin-vue": "5.0.0",
+    "license-check-and-add": "3.0.4",
+    "license-checker": "25.0.1",
+    "vue-template-compiler": "2.6.11"
   },
   "eslintConfig": {
     "root": true,
