@@ -1,0 +1,37 @@
+stages:
+  - build
+  - pushToNexus
+
+build:
+  image: maven:3.6.0-jdk-11
+  stage: build
+  before_script:
+    - cat /etc/os-release
+    - apt-get update
+    - apt-get install -y build-essential
+    - curl -sL https://deb.nodesource.com/setup_12.x | bash -
+    - apt-get install -y nodejs
+    - nodejs -v
+    - npm -v
+  script:
+    - echo "@skills:registry=http://$NEXUS_SERVER/repository/skills-registry/" > ~/.npmrc
+    - cat ~/.npmrc
+    - echo "<settings><mirrors><mirror><id>central</id><name>central</name><url>http://$NEXUS_SERVER/repository/maven-public/</url><mirrorOf>*</mirrorOf></mirror></mirrors></settings>" > ~/.m2/settings.xml
+    - cat ~/.m2/settings.xml
+    - mvn --batch-mode install
+  artifacts:
+    paths:
+      - backend/pom.xml
+      - backend/target/skills-stress-test-*.jar
+
+pushToNexus:
+  image: maven:3.6.0-jdk-11
+  stage: pushToNexus
+  script:
+    - echo "@skills:registry=http://$NEXUS_SERVER/repository/skills-registry/" > ~/.npmrc
+    - cat ~/.npmrc
+    - echo "<settings><servers><server><id>nexus-snapshots</id><username>admin</username><password>$NEXUS_PASS</password></server><server><id>nexus-releases</id><username>admin</username><password>$NEXUS_PASS</password></server></servers><mirrors><mirror><id>central</id><name>central</name><url>http://$NEXUS_SERVER/repository/maven-public/</url><mirrorOf>*</mirrorOf></mirror></mirrors></settings>" > ~/.m2/settings.xml
+    - cat ~/.m2/settings.xml
+    - backendJar=$(ls backend/target/skills-stress-test-*.jar)
+    - echo $backendJar
+    - mvn --batch-mode deploy:deploy-file -DpomFile=backend/pom.xml -Dfile=${backendJar} -Durl=http://ip-10-113-80-244.evoforge.org/repository/maven-snapshots/ -DrepositoryId=nexus-snapshots
