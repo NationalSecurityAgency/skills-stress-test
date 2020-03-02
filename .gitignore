@@ -2,3 +2,5 @@
 /backend/.mvn/wrapper/
 /backend/target/
 /backend/backend.iml
+/frontend/frontend.iml
+/frontend/target/
