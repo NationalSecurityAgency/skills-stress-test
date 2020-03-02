@@ -7,7 +7,7 @@
         <artifactId>skills-stress-test</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <groupId>skills</groupId>
+    <groupId>skills-tests</groupId>
     <artifactId>skills-stress-test</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <name>backend</name>
