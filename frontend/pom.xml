@@ -17,7 +17,6 @@
         <frontend-maven-plugin.version>1.6</frontend-maven-plugin.version>
     </properties>
 
-
     <build>
         <plugins>
             <plugin>
