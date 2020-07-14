@@ -4,3 +4,4 @@
 /backend/backend.iml
 /frontend/frontend.iml
 /frontend/target/
+*.iml
