@@ -7,5 +7,5 @@ These pages provide in-depth guidance on the installation, usage and contributio
 
 # Workflows Status
 
-[![CI Badge](https://github.com/NationalSecurityAgency/skills-stress-tests/workflows/Continuous%20Integration/badge.svg)](https://github.com/NationalSecurityAgency/skills-service/actions?query=workflow%3A%22Continuous+Integration%22)
+[![CI Badge](https://github.com/NationalSecurityAgency/skills-stress-test/workflows/Continuous%20Integration/badge.svg)](https://github.com/NationalSecurityAgency/skills-service/actions?query=workflow%3A%22Continuous+Integration%22)
 
