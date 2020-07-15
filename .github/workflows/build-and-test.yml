@@ -63,8 +63,8 @@ jobs:
     - name: maven-settings-xml-action
       uses: whelk-io/maven-settings-xml-action@v9
       with:
-        repositories: '[{ "id": "call-stack-repo", "url": "https://maven.pkg.github.com/NationalSecurityAgency/call-stack-profiler" }]'
-        servers: '[{ "id": "call-stack-repo", "username": "noMatter", "password": "${{ secrets.GITHUB_TOKEN }}" }]'
+        repositories: '[{ "id": "github", "url": "https://maven.pkg.github.com/NationalSecurityAgency/call-stack-profiler" }]'
+        servers: '[{ "id": "github", "username": "noMatter", "password": "${{ secrets.GITHUB_TOKEN }}" }]'
 
     - name: print settings.xml again
       run: cat ~/.m2/settings.xml
