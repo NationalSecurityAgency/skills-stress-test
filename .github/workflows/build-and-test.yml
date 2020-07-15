@@ -42,37 +42,36 @@ jobs:
     - uses: actions/setup-java@v1
       with:
         java-version: '11.X.X' # The JDK version to make available on the path.
-        server-id: 'call-stack-repo'
 
-    - name: print settings.xml
-      run: cat ~/.m2/settings.xml
+#    - name: print settings.xml
+#      run: cat ~/.m2/settings.xml
 
-    - name: Print Versions
-      run: |
-        mvn --version
-        java -version
+#    - name: Print Versions
+#      run: |
+#        mvn --version
+#        java -version
+#
+#    - name: Cache local Maven repository
+#      uses: actions/cache@v2
+#      with:
+#        path: ~/.m2/repository
+#        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+#        restore-keys: |
+#          ${{ runner.os }}-maven-
 
-    - name: Cache local Maven repository
-      uses: actions/cache@v2
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-maven-
-
-    - name: maven-settings-xml-action
-      uses: whelk-io/maven-settings-xml-action@v9
-      with:
-        repositories: '[{ "id": "github", "url": "https://maven.pkg.github.com/NationalSecurityAgency/call-stack-profiler" }]'
-        servers: '[{ "id": "github", "username": "noMatter", "password": "${{ secrets.GITHUB_TOKEN }}" }]'
-
-    - name: print settings.xml again
-      run: cat ~/.m2/settings.xml
+#    - name: maven-settings-xml-action
+#      uses: whelk-io/maven-settings-xml-action@v9
+#      with:
+#        repositories: '[{ "id": "github", "url": "https://maven.pkg.github.com/NationalSecurityAgency/call-stack-profiler" }]'
+#        servers: '[{ "id": "github", "username": "noMatter", "password": "${{ secrets.GITHUB_TOKEN }}" }]'
+#
+#    - name: print settings.xml again
+#      run: cat ~/.m2/settings.xml
 
     - name: Build
+      run: mvn --batch-mode install
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: mvn --batch-mode install
 
     - name: upload result artifacts
       if: ${{ always() }}
