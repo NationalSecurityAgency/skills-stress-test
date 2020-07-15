@@ -64,12 +64,14 @@ jobs:
       uses: whelk-io/maven-settings-xml-action@v9
       with:
         repositories: '[{ "id": "call-stack-repo", "url": "https://maven.pkg.github.com/NationalSecurityAgency/call-stack-profiler" }]'
-        servers: '[{ "id": "call-stack-repo", "username": "${{ secrets.GITHUB_USERNAME }}", "password": "${{ secrets.GITHUB_TOKEN }}" }]'
+        servers: '[{ "id": "call-stack-repo", "username": "noMatter", "password": "${{ secrets.GITHUB_TOKEN }}" }]'
 
     - name: print settings.xml again
       run: cat ~/.m2/settings.xml
 
     - name: Build
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: mvn --batch-mode install
 
     - name: upload result artifacts
