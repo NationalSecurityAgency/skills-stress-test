@@ -62,7 +62,7 @@ jobs:
         repositories: '[{ "id": "call-stack-repo", "url": "https://maven.pkg.github.com/NationalSecurityAgency/call-stack-profiler" }]'
 
     - name: print settings.xml
-      run: ls ~/.m2/settings.xml
+      run: cat ~/.m2/settings.xml
 
     - name: Build
       run: mvn --batch-mode install
