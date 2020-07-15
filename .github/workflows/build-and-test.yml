@@ -43,8 +43,6 @@ jobs:
       with:
         java-version: '11.X.X' # The JDK version to make available on the path.
         server-id: 'call-stack-repo'
-        server-username: ${{ secrets.GITHUB_USERNAME }} # env variable for username in deploy
-        server-password: ${{ secrets.GITHUB_TOKEN }} # env variable for token in deploy
 
     - name: print settings.xml
       run: cat ~/.m2/settings.xml
@@ -66,6 +64,7 @@ jobs:
       uses: whelk-io/maven-settings-xml-action@v9
       with:
         repositories: '[{ "id": "call-stack-repo", "url": "https://maven.pkg.github.com/NationalSecurityAgency/call-stack-profiler" }]'
+        servers: '[{ "id": "call-stack-repo", "username": "${{ secrets.GITHUB_USERNAME }}", "password": "${{ secrets.GITHUB_TOKEN }}" }]'
 
     - name: print settings.xml again
       run: cat ~/.m2/settings.xml
