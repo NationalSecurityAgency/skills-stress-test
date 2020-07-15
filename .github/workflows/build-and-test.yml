@@ -42,8 +42,12 @@ jobs:
     - uses: actions/setup-java@v1
       with:
         java-version: '11.X.X' # The JDK version to make available on the path.
+        server-id: 'call-stack-repo'
         server-username: ${{ secrets.GITHUB_USERNAME }} # env variable for username in deploy
         server-password: ${{ secrets.GITHUB_TOKEN }} # env variable for token in deploy
+
+    - name: print settings.xml
+      run: cat ~/.m2/settings.xml
 
     - name: Print Versions
       run: |
