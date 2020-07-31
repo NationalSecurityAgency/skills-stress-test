@@ -7,7 +7,7 @@ These pages provide in-depth guidance on the installation, usage and contributio
 
 # SkillTree Workflows
 
-Serves a single place for SkillTree projects' CI status.
+Serves as a single location for SkillTree projects' CI status.
 
 ## skills-service
 
