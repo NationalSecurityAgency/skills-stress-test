@@ -22,6 +22,8 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.client.ClientHttpResponse
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
+import org.springframework.web.client.DefaultResponseErrorHandler
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.ResponseErrorHandler
 import org.springframework.web.client.RestTemplate
@@ -36,31 +38,43 @@ class SkillsService {
     RestTemplate restTemplate = new RestTemplate()
 
     SkillsService() {
-        restTemplate.setErrorHandler(new ResponseErrorHandler() {
-            @Override
-            boolean hasError(ClientHttpResponse clientHttpResponse) throws IOException {
-                if (clientHttpResponse.getStatusCode() != HttpStatus.OK) {
-                    return true
-                }
-                return false
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
+            public boolean hasError(ClientHttpResponse response) throws IOException {
+                HttpStatus statusCode = response.getStatusCode();
+                return statusCode.series() == HttpStatus.Series.SERVER_ERROR;
             }
-
-            @Override
-            void handleError(ClientHttpResponse clientHttpResponse) throws IOException {
-
-            }
-
-            @Override
-            void handleError(URI url, HttpMethod method, ClientHttpResponse clientHttpResponse) throws IOException {
-                StringBuilder msg = new StringBuilder()
-                msg.append("RestTemplate go an error for [${method}] => [${url}]\n")
-                msg.append("Status code: [" + clientHttpResponse.getStatusCode() + "]\n");
-                msg.append("Response: [" + clientHttpResponse.getStatusText() + "]\n");
-                msg.append("Body: " + IOUtils.toString(clientHttpResponse.getBody(), Charset.defaultCharset()));
-                log.error(msg.toString());
-                throw new HttpClientErrorException(clientHttpResponse.statusCode, msg.toString())
-            }
-        })
+        });
+//        restTemplate.setErrorHandler(new ResponseErrorHandler() {
+//            @Override
+//            boolean hasError(ClientHttpResponse clientHttpResponse) throws IOException {
+//                if (clientHttpResponse.getStatusCode() != HttpStatus.OK) {
+//                    StringBuilder msg = new StringBuilder()
+//                    msg.append("Status code: [" + clientHttpResponse.getStatusCode() + "]\n");
+//                    msg.append("Response: [" + clientHttpResponse.getStatusText() + "]\n");
+//                    msg.append("Body: " + IOUtils.toString(clientHttpResponse.getBody(), Charset.defaultCharset()));
+//                    log.error(msg.toString());
+//                    return true
+//                }
+//                return false
+//            }
+//
+//            @Override
+//            void handleError(ClientHttpResponse clientHttpResponse) throws IOException {
+//
+//            }
+//
+//            @Override
+//            void handleError(URI url, HttpMethod method, ClientHttpResponse clientHttpResponse) throws IOException {
+//                StringBuilder msg = new StringBuilder()
+//                msg.append("RestTemplate go an error for [${method}] => [${url}]\n")
+//                msg.append("Status code: [" + clientHttpResponse.getStatusCode() + "]\n");
+//                msg.append("Response: [" + clientHttpResponse.getStatusText() + "]\n");
+//                msg.append("Body: " + IOUtils.toString(clientHttpResponse.getBody(), Charset.defaultCharset()));
+//                log.error(msg.toString());
+//                throw new HttpClientErrorException(clientHttpResponse.statusCode, msg.toString())
+//            }
+//        })
     }
 
     private def post(String url, Map params) {
@@ -90,8 +104,7 @@ class SkillsService {
     }
 
     boolean projectIdExists(Map params) {
-        def id = URLEncoder.encode(params.projectId, 'UTF-8')
-        def res = get("${serviceUrl}/app/projectExist?projectId=${id}")
+        def res = post("${serviceUrl}/app/projectExist".toString(), params)
         return Boolean.valueOf(res.toString());
     }
 
