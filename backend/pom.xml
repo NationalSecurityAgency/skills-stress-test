@@ -14,6 +14,8 @@
 
     <properties>
         <java.version>1.8</java.version>
+        <commons.lang3.version>3.9</commons.lang3.version>
+        <joda.time.version>2.10.3</joda.time.version>
     </properties>
 
     <dependencies>
@@ -24,6 +26,10 @@
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-json</artifactId>
         </dependency>
 
         <dependency>
@@ -67,6 +73,20 @@
             <artifactId>httpclient</artifactId>
         </dependency>
 
+        <!-- for embedded CSP -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons.lang3.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>${joda.time.version}</version>
+        </dependency>
+
+        <!--
+        embedded until we can publish csp to public maven repos
         <dependency>
             <groupId>skilltree</groupId>
             <artifactId>call-stack-profiler</artifactId>
@@ -85,7 +105,7 @@
                     <artifactId>slf4j-log4j12</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
+        </dependency>-->
     </dependencies>
 
     <build>
