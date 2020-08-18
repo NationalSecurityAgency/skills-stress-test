@@ -18,15 +18,24 @@ package skills.stress.services
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.commons.io.IOUtils
+import org.apache.http.conn.ssl.NoopHostnameVerifier
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory
+import org.apache.http.impl.client.CloseableHttpClient
+import org.apache.http.impl.client.HttpClients
+import org.apache.http.ssl.TrustStrategy
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.client.ClientHttpResponse
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.ResponseErrorHandler
 import org.springframework.web.client.RestTemplate
 
+import javax.net.ssl.SSLContext
 import java.nio.charset.Charset
+import java.security.cert.CertificateException
+import java.security.cert.X509Certificate
 
 @Slf4j
 class SkillsService {
@@ -61,6 +70,29 @@ class SkillsService {
                 throw new HttpClientErrorException(clientHttpResponse.statusCode, msg.toString())
             }
         })
+
+        TrustStrategy acceptingTrustStrategy = new TrustStrategy() {
+            @Override
+            boolean isTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+                return true
+            }
+        }
+
+        SSLContext sslContext = org.apache.http.ssl.SSLContexts.custom()
+                .loadTrustMaterial(null, acceptingTrustStrategy)
+                .build();
+
+        SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE);
+
+        CloseableHttpClient httpClient = HttpClients.custom()
+                .setSSLSocketFactory(csf)
+                .build();
+        HttpComponentsClientHttpRequestFactory requestFactory =
+                new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setHttpClient(httpClient);
+
+        restTemplate.setRequestFactory(requestFactory);
+
     }
 
     private def post(String url, Map params) {
