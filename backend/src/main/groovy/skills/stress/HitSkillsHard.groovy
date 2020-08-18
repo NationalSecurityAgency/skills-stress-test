@@ -59,6 +59,15 @@ class HitSkillsHard {
 
     void stop() {
         shouldRun.set(false)
+
+        if (futures) {
+            // recommended to use following statement to ensure the execution of all tasks.
+            log.info("Started All Threads")
+            futures.each { it.get() }
+
+            log.info("All Threads Completed")
+            profThreadPool?.shutdown()
+        }
     }
 
     boolean isRunning() {
@@ -94,8 +103,11 @@ class HitSkillsHard {
         return this;
     }
 
+    private ProfThreadPool profThreadPool
+    private List<Future> futures
     void run() {
         assert numConcurrentThreads > 1
+
         printSetupParams()
         try {
             createSkillsDef.create()
@@ -109,25 +121,16 @@ class HitSkillsHard {
         int numReportEventThreads = numConcurrentThreads - numClientDisplayThreads
         log.info("[{}] client display threads, [{}] report events threads", numClientDisplayThreads, numReportEventThreads)
 
-        ProfThreadPool profThreadPool = new ProfThreadPool("reportEventsPool", numConcurrentThreads)
+        profThreadPool = new ProfThreadPool("reportEventsPool", numConcurrentThreads)
         profThreadPool.warnIfFull = false
+        futures = []
 
-        try {
-            List<Future> futures = []
-            numReportEventThreads.times {
-                futures.add(profThreadPool.submit({ -> reportEvents() } as Callable))
-            }
+        numReportEventThreads.times {
+            futures.add(profThreadPool.submit({ -> reportEvents() } as Callable))
+        }
 
-            numClientDisplayThreads.times {
-                futures.add(profThreadPool.submit({ -> clientDisplaySimulation() } as Callable))
-            }
-
-            // recommended to use following statement to ensure the execution of all tasks.
-            log.info("Started All Threads")
-            futures.each { it.get() }
-        } finally {
-            log.info("All Threads Completed")
-            profThreadPool.shutdown()
+        numClientDisplayThreads.times {
+            futures.add(profThreadPool.submit({ -> clientDisplaySimulation() } as Callable))
         }
     }
 

@@ -80,7 +80,7 @@ limitations under the License.
         props: ['running'],
         data() {
             return {
-                serviceUrl: 'https://localhost:8443',
+                serviceUrl: 'http://localhost:8080',
                 numProjects: 2,
                 subjPerProject: 6,
                 skillsPerSubject: 50,

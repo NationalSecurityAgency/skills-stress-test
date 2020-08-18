@@ -32,7 +32,7 @@ class SkillServiceFactory {
         String projectId = CreateSkillsDef.getProjectId(projectIndex)
         SkillsService service = cache.get(projectId)
         if (!service) {
-            service = new SkillsService(serviceUrl: serviceUrl)
+            service = new SkillsService(serviceUrl, pkiMode)
             cache.put(projectId, service)
         }
         return service

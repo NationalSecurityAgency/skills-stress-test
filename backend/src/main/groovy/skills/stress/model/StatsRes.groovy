@@ -15,6 +15,9 @@
  */
 package skills.stress.model
 
+import groovy.transform.ToString
+
+@ToString(includeNames = true)
 class StatsRes {
     long totalEvents
     long totalExecTime

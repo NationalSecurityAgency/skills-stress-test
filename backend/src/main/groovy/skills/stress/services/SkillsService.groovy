@@ -18,12 +18,16 @@ package skills.stress.services
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.commons.io.IOUtils
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.http.client.ClientHttpResponse
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
-import org.springframework.web.client.DefaultResponseErrorHandler
+import org.springframework.util.LinkedMultiValueMap
+import org.springframework.util.MultiValueMap
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.ResponseErrorHandler
 import org.springframework.web.client.RestTemplate
@@ -34,47 +38,87 @@ import java.nio.charset.Charset
 class SkillsService {
 
     String serviceUrl
+    boolean pkiMode
 
     RestTemplate restTemplate = new RestTemplate()
 
-    SkillsService() {
+    SkillsService(String serviceUrl, boolean pkiMode) {
+        this.serviceUrl = serviceUrl;
+        this.pkiMode = pkiMode
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-        restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
-            public boolean hasError(ClientHttpResponse response) throws IOException {
-                HttpStatus statusCode = response.getStatusCode();
-                return statusCode.series() == HttpStatus.Series.SERVER_ERROR;
+        restTemplate.setErrorHandler(new ResponseErrorHandler() {
+            @Override
+            boolean hasError(ClientHttpResponse clientHttpResponse) throws IOException {
+                if (clientHttpResponse.getStatusCode() != HttpStatus.OK) {
+                    StringBuilder msg = new StringBuilder()
+                    msg.append("Status code: [" + clientHttpResponse.getStatusCode() + "]\n");
+                    msg.append("Response: [" + clientHttpResponse.getStatusText() + "]\n");
+                    msg.append("Body: " + IOUtils.toString(clientHttpResponse.getBody(), Charset.defaultCharset()));
+                    log.error(msg.toString());
+                    return true
+                }
+                return false
             }
-        });
-//        restTemplate.setErrorHandler(new ResponseErrorHandler() {
-//            @Override
-//            boolean hasError(ClientHttpResponse clientHttpResponse) throws IOException {
-//                if (clientHttpResponse.getStatusCode() != HttpStatus.OK) {
-//                    StringBuilder msg = new StringBuilder()
-//                    msg.append("Status code: [" + clientHttpResponse.getStatusCode() + "]\n");
-//                    msg.append("Response: [" + clientHttpResponse.getStatusText() + "]\n");
-//                    msg.append("Body: " + IOUtils.toString(clientHttpResponse.getBody(), Charset.defaultCharset()));
-//                    log.error(msg.toString());
-//                    return true
-//                }
-//                return false
+
+            @Override
+            void handleError(ClientHttpResponse clientHttpResponse) throws IOException {
+
+            }
+
+            @Override
+            void handleError(URI url, HttpMethod method, ClientHttpResponse clientHttpResponse) throws IOException {
+                StringBuilder msg = new StringBuilder()
+                msg.append("RestTemplate go an error for [${method}] => [${url}]\n")
+                msg.append("Status code: [" + clientHttpResponse.getStatusCode() + "]\n");
+                msg.append("Response: [" + clientHttpResponse.getStatusText() + "]\n");
+                msg.append("Body: " + IOUtils.toString(clientHttpResponse.getBody(), Charset.defaultCharset()));
+                log.error(msg.toString());
+                throw new HttpClientErrorException(clientHttpResponse.statusCode, msg.toString())
+            }
+        })
+
+        if (!pkiMode) {
+            auth("user1")
+        }
+    }
+    static final String AUTH_HEADER = 'Authorization'
+    String authenticationToken;
+
+    private void auth(String username, String password = "password", String firstName = "first", lastName = "last") {
+        createAccount(serviceUrl, username, password, firstName, lastName)
+        HttpHeaders headers = new HttpHeaders()
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED)
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>()
+        params.add('username', username)
+        params.add('password', password)
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers)
+        ResponseEntity<String> response = restTemplate.postForEntity(serviceUrl + '/performLogin', request, String.class)
+
+        assert response.statusCode == HttpStatus.OK, 'authentication failed: ' + response.statusCode
+
+        authenticationToken = response.getHeaders().getFirst(AUTH_HEADER)
+//        assert authenticationToken, 'no authentication token was provided!'
+//        authenticated = true
+    }
+
+    private boolean createAccount(String skillsServiceUrl, String username, String password, String firstName, String lastName) {
+        ResponseEntity<String> userExistsResponse = restTemplate.getForEntity("${skillsServiceUrl}/app/users/validExistingDashboardUserId/{userId}", String, username)
+        boolean userExists = Boolean.valueOf(userExistsResponse.body)
+        if (!userExists) {
+            Map<String, String> userInfo = [
+                    firstName: firstName,
+                    lastName : lastName,
+                    email    : username,
+                    password : password,
+            ]
+            restTemplate.put(skillsServiceUrl + '/createAccount', userInfo)
+//            if ( response.statusCode != HttpStatus.OK) {
+//                throw new RuntimeException("${response.body}, url=${skillsServiceUrl}, code=${response.statusCode}")
 //            }
-//
-//            @Override
-//            void handleError(ClientHttpResponse clientHttpResponse) throws IOException {
-//
-//            }
-//
-//            @Override
-//            void handleError(URI url, HttpMethod method, ClientHttpResponse clientHttpResponse) throws IOException {
-//                StringBuilder msg = new StringBuilder()
-//                msg.append("RestTemplate go an error for [${method}] => [${url}]\n")
-//                msg.append("Status code: [" + clientHttpResponse.getStatusCode() + "]\n");
-//                msg.append("Response: [" + clientHttpResponse.getStatusText() + "]\n");
-//                msg.append("Body: " + IOUtils.toString(clientHttpResponse.getBody(), Charset.defaultCharset()));
-//                log.error(msg.toString());
-//                throw new HttpClientErrorException(clientHttpResponse.statusCode, msg.toString())
-//            }
-//        })
+            return true
+        }
+        return false
     }
 
     private def post(String url, Map params) {

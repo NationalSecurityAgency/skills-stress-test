@@ -20,6 +20,7 @@ limitations under the License.
         <header-nav/>
         <div class="container">
             <start-stress-test @start-test="startTest" @stop-test="stopTest" :running="running"/>
+            <div v-if="failedToStart" class="alert alert-danger mt-2">Failed to start! See Logs!</div>
             <stress-test-status class="mt-2" :status="status" :running="running"/>
         </div>
     </div>
@@ -42,6 +43,7 @@ limitations under the License.
         data() {
             return {
                 running: false,
+                failedToStart: false,
                 status: {},
                 timer: undefined,
             };
@@ -57,12 +59,20 @@ limitations under the License.
                     });
             },
             startTest(config) {
-                this.running = true;
-                StressTestsService.startTest(config);
+                this.failedToStart = false;
+                StressTestsService.startTest(config)
+                  .then(() => {
+                    this.running = true;
+                  })
+                 .catch(() => {
+                    this.failedToStart = true;
+                 });
             },
             stopTest() {
-                this.running = false;
-                StressTestsService.stopTest();
+                StressTestsService.stopTest()
+                  .then(() => {
+                    this.running = false;
+                  });
             }
         },
         watch: {
