@@ -45,7 +45,7 @@ class SkillsService {
     SkillsService(String serviceUrl, boolean pkiMode) {
         this.serviceUrl = serviceUrl;
         this.pkiMode = pkiMode
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+//        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         restTemplate.setErrorHandler(new ResponseErrorHandler() {
             @Override
             boolean hasError(ClientHttpResponse clientHttpResponse) throws IOException {
