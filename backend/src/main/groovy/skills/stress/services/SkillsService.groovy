@@ -91,7 +91,8 @@ class SkillsService {
 
     boolean projectIdExists(Map params) {
         def id = URLEncoder.encode(params.projectId, 'UTF-8')
-        def res = post("${serviceUrl}/app/projectExist", params)
+//        def res = post("${serviceUrl}/app/projectExist", params)
+        def res = get("${serviceUrl}/app/projectExist?projectId=${id}")
         return Boolean.valueOf(res.toString());
     }
 
