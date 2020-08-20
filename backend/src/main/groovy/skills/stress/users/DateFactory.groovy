@@ -15,6 +15,7 @@
  */
 package skills.stress.users
 
+import callStack.profiler.Profile
 import groovy.time.TimeCategory
 
 class DateFactory {
@@ -22,6 +23,7 @@ class DateFactory {
     int numDates = 365
 
     Random r = new Random()
+    @Profile
     Date getDate(){
         int ranNum = r.nextInt(numDates)
         use (TimeCategory) {

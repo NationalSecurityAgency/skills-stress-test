@@ -15,6 +15,7 @@
  */
 package skills.stress.users
 
+import callStack.profiler.Profile
 import groovy.time.TimeCategory
 import groovy.transform.ToString
 import groovy.util.logging.Slf4j
@@ -58,8 +59,11 @@ class FileBasedUserIdFactory implements UserIdFactory {
 
     }
 
+    @Profile
     private synchronized UserWithExpiration getNonActiveUserWithExpiration() {
-        List<String> currentActiveIds = currentActiveUsers.collect {it.userId}
+        Set<String> currentActiveIds = new HashSet<>()
+        currentActiveUsers.each { currentActiveIds.add(it.userId) }
+
         List<String> availableToBeActive = userIds.findAll { !currentActiveIds.contains(it) }
         int ranNum = r.nextInt(availableToBeActive.size())
         String newId = availableToBeActive.get(ranNum)
@@ -78,6 +82,7 @@ class FileBasedUserIdFactory implements UserIdFactory {
 
     Random r = new Random()
 
+    @Profile
     synchronized String getUserId() {
         int ranNum = r.nextInt(currentActiveUsers.size())
         UserWithExpiration userWithExpiration = currentActiveUsers.get(ranNum)
@@ -86,7 +91,7 @@ class FileBasedUserIdFactory implements UserIdFactory {
             currentActiveUsers.remove(userWithExpiration)
             currentActiveUsers.add(newActiveUser)
             userWithExpiration = newActiveUser
-            log.info("New Active user [{}]", newActiveUser)
+            log.info("New Active user [{}]. Currently [${currentActiveUsers.size()}] active users", newActiveUser)
         }
 
         return userWithExpiration.userId

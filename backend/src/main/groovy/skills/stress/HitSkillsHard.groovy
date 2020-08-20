@@ -15,6 +15,7 @@
  */
 package skills.stress
 
+import callStack.profiler.CProf
 import callStack.profiler.ProfThreadPool
 import groovy.util.logging.Slf4j
 import skills.stress.model.StatsRes
@@ -139,16 +140,24 @@ class HitSkillsHard {
 
     void reportEvents() {
         performWorkInThread { SkillsService service, CreateSkillsDef.RandomLookupKey randomLookupKey ->
+            // time consuming lookup for large number of users
+            String userId = userIdFactory.userId
+            Date date = userAndDateFactory.date
+            Map defParams = [projectId: randomLookupKey.projId, skillId: randomLookupKey.skillId]
+
             statsHelper.startEvent()
-            service.addSkill([projectId: randomLookupKey.projId, skillId: randomLookupKey.skillId], userIdFactory.userId, userAndDateFactory.date)
+            service.addSkill(defParams, userId, date)
             statsHelper.endEvent()
         }
     }
 
     void clientDisplaySimulation() {
         performWorkInThread { SkillsService service, CreateSkillsDef.RandomLookupKey randomLookupKey ->
+            String userId = userIdFactory.userId
+            String projectId = randomLookupKey.projId
+
             clientDisplayStatsHelper.startEvent()
-            service.getClientDisplayProjectSummary(randomLookupKey.projId, userIdFactory.userId)
+            service.getClientDisplayProjectSummary(projectId, userId)
             clientDisplayStatsHelper.endEvent()
         }
     }

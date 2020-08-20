@@ -15,6 +15,7 @@
  */
 package skills.stress.services
 
+import callStack.profiler.Profile
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.commons.io.IOUtils
@@ -121,6 +122,7 @@ class SkillsService {
         return false
     }
 
+    @Profile
     private def post(String url, Map params) {
         ResponseEntity<String> responseEntity =
                 restTemplate.postForEntity(url.toString(), params, String)
@@ -172,6 +174,7 @@ class SkillsService {
         post("${serviceUrl}/admin/projects/${params.projectId}/subjects/${params.subjectId}/skills/${params.skillId}", params)
     }
 
+    @Profile
     def addSkill(Map params, String userId, Date date) {
         def clientParams = [
                 userId   : userId,
