@@ -39,7 +39,7 @@ class FileBasedUserIdFactory implements UserIdFactory {
     FileBasedUserIdFactory(String path) {
         File f = new File(path)
         if (!f.exists()) {
-            throw new IllegalArgumentException("[{}] does not exist", path)
+            throw new IllegalArgumentException("[${path}] does not exist")
         }
         List<String> userIdsTmp = []
         f.eachLine {
