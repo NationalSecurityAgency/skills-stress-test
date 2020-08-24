@@ -26,9 +26,11 @@ import skills.stress.services.SkillsService
 
 import skills.stress.stats.StatsHelper
 import skills.stress.users.FileBasedUserIdFactory
+import skills.stress.users.RemovedListener
 import skills.stress.users.SimpleUserIdFactory
 import skills.stress.users.DateFactory
 import skills.stress.users.UserIdFactory
+import skills.stress.users.UserWithExpiration
 
 import java.util.concurrent.Callable
 import java.util.concurrent.Future
@@ -59,6 +61,7 @@ class HitSkillsHard {
     UserIdFactory userIdFactory
     SkillServiceFactory skillServiceFactory
     ErrorTracker errorTracker
+    WebSocketClientManager webSocketClientManager
 
     void stop() {
         shouldRun.set(false)
@@ -78,14 +81,24 @@ class HitSkillsHard {
     }
 
     HitSkillsHard init() {
+        webSocketClientManager = new WebSocketClientManager(pkiMode: pkiMode)
+
         if (pkiMode) {
-            userIdFactory = new FileBasedUserIdFactory(pkiModeUserIdFilePath)
+            userIdFactory = FileBasedUserIdFactory.build(pkiModeUserIdFilePath)
             if (numProjects > userIdFactory.numUsers()){
                 throw new IllegalArgumentException("In PKI Mode must not supply more projects than actual users. [$numProjects] > [${userIdFactory.numUsers()}]")
             }
         } else {
-            userIdFactory = new SimpleUserIdFactory(numUsers: numUsersPerApp)
+            userIdFactory = SimpleUserIdFactory.build(numUsersPerApp)
         }
+
+        userIdFactory.addActiveUserRemovedListener(new RemovedListener<UserWithExpiration>() {
+            @Override
+            void itemRemoved(UserWithExpiration item) {
+                webSocketClientManager.cleanUpUser(item.userId)
+            }
+        })
+
         userAndDateFactory = new DateFactory(
                 numDates: 365
         )
@@ -149,6 +162,9 @@ class HitSkillsHard {
 
             statsHelper.startEvent()
             service.addSkill(defParams, userId, date)
+            //at the moment, we don't need to do anything with the actual client that is created here
+            //this will impact timing metrics, however each userId/projId pairing is only created once
+            webSocketClientManager.get(userId, randomLookupKey.projId, service)
             statsHelper.endEvent()
         }
     }

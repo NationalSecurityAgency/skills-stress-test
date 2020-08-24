@@ -15,24 +15,29 @@
  */
 package skills.stress.users
 
-class SimpleUserIdFactory implements UserIdFactory {
+class SimpleUserIdFactory extends AbstractUserIdFactory {
 
-    int numUsers = 10000
-    Random r = new Random()
-    String getUserId(){
-        int ranNum = r.nextInt(numUsers)
-        return "User${ranNum}"
+    public static SimpleUserIdFactory build(int numUsers=10000) {
+        List<UserWithExpiration> currentActiveUsers = Collections.synchronizedList([])
+        List<String> userIds = []
+        for (int i=0; i++; i < numUsers) {
+            userIds << "User${i}"
+        }
+        userIds = Collections.unmodifiableList(userIds)
+        log.info("Loaded [{}] users", userIds.size())
+        int numCurrentActiveUsers = Math.min(5000, (userIds.size() / 2).toInteger())
+        log.info("[{}] active users users", numCurrentActiveUsers)
+        (0..numCurrentActiveUsers - 1).each {
+            String userId = userIds[it]
+            Date expirationDate = getRandomUserExpiration()
+            currentActiveUsers.add(new UserWithExpiration(userId: userId, expireOn: expirationDate))
+        }
+        log.info("Loaded [{}] active users", currentActiveUsers.size())
+        return new FileBasedUserIdFactory(currentActiveUsers, userIds)
     }
 
-    String getUserWithIndex(int index) {
-        return "User${index}"
+    private SimpleUserIdFactory(List<UserWithExpiration> currentActiveUsers, List<String> userIds){
+        super(currentActiveUsers, userIds)
     }
 
-    String getUserByProjectIndex(Integer index){
-        return getUserWithIndex(index)
-    }
-
-    int numUsers() {
-        return numUsers
-    }
 }

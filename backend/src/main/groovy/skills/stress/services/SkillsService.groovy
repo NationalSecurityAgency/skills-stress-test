@@ -195,4 +195,8 @@ class SkillsService {
         get("${serviceUrl}/api/projects/${projId}/subjects/${subjId}/summary?userId=${userId}")
     }
 
+    String getClientSecret(String projectId){
+        get("${serviceUrl}/admin/projects/${projectId}/clientSecret")
+    }
+
 }
