@@ -29,7 +29,7 @@ class ErrorTracker {
             LevenshteinDistance levenshteinDistance = new LevenshteinDistance()
             foundMatch = errors.find { SeenError seenError ->
                 int distance = levenshteinDistance.apply(body, seenError.serverBody)
-                log.info("Compared, distance is: [$distance]")
+                log.trace("Compared, distance is: [{}]", distance)
                 if (distance < minDistance) {
                     return seenError
                 }
