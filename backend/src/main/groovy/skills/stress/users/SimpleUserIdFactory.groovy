@@ -15,25 +15,29 @@
  */
 package skills.stress.users
 
+import groovy.util.logging.Slf4j
+
+@Slf4j
 class SimpleUserIdFactory extends AbstractUserIdFactory {
 
     public static SimpleUserIdFactory build(int numUsers=10000) {
         List<UserWithExpiration> currentActiveUsers = Collections.synchronizedList([])
-        List<String> userIds = []
-        for (int i=0; i++; i < numUsers) {
-            userIds << "User${i}"
+        List<String> uids = []
+        log.info("generating [${numUsers}] users")
+        for (int i=0; i < numUsers; i++) {
+            uids.add("User${i}")
         }
-        userIds = Collections.unmodifiableList(userIds)
-        log.info("Loaded [{}] users", userIds.size())
-        int numCurrentActiveUsers = Math.min(5000, (userIds.size() / 2).toInteger())
-        log.info("[{}] active users users", numCurrentActiveUsers)
-        (0..numCurrentActiveUsers - 1).each {
-            String userId = userIds[it]
+        uids = Collections.unmodifiableList(uids)
+        log.info("Loaded [{}] users", uids.size())
+        int numCurrentActiveUsers = Math.min(5000, (uids.size() / 2).toInteger())
+        log.info("[{}] active users ", numCurrentActiveUsers)
+        for(int i=0; i< numCurrentActiveUsers;i++) {
+            String userId = uids[i]
             Date expirationDate = getRandomUserExpiration()
             currentActiveUsers.add(new UserWithExpiration(userId: userId, expireOn: expirationDate))
         }
         log.info("Loaded [{}] active users", currentActiveUsers.size())
-        return new FileBasedUserIdFactory(currentActiveUsers, userIds)
+        return new SimpleUserIdFactory(currentActiveUsers, uids)
     }
 
     private SimpleUserIdFactory(List<UserWithExpiration> currentActiveUsers, List<String> userIds){

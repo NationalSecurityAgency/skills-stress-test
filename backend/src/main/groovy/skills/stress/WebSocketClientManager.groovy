@@ -15,8 +15,7 @@
  */
 package skills.stress
 
-import org.springframework.cache.Cache
-import org.springframework.cache.concurrent.ConcurrentMapCache
+import groovy.util.logging.Slf4j
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import skills.stress.services.SkillsService
@@ -24,31 +23,35 @@ import skills.stress.services.SkillsService
 import java.util.concurrent.locks.ReadWriteLock
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
+@Slf4j
 class WebSocketClientManager {
 
     boolean pkiMode = true
+    int maxClients = 10
 
     private ReadWriteLock clientLock = new ReentrantReadWriteLock()
 
     private MultiValueMap<String, String> userToClientIdCache = new LinkedMultiValueMap<>()
-    private Map<String, WebSocketClient> userProjectWebSocketClient = new HashMap<>()
+    private Map<String, WebSocketClient> clientIdToWebSocketClient = new HashMap<>()
+    private int clientCount = 0
 
     public WebSocketClient get(String user, String project, SkillsService skillsService) {
         String key = buildKey(user, project)
         clientLock.readLock().lock()
         try {
-            WebSocketClient webSocketClient = userProjectWebSocketClient.get(key)
+            WebSocketClient webSocketClient = clientIdToWebSocketClient.get(key)
             if(!webSocketClient) {
                 clientLock.readLock().unlock()
                 clientLock.writeLock().lock()
                 try {
                     //re-check just in case another thread changed the state before we could acquire the write lock
-                    webSocketClient = userProjectWebSocketClient.get(key)
-                    if(!webSocketClient) {
+                    webSocketClient = clientIdToWebSocketClient.get(key)
+                    if(!webSocketClient && clientCount < maxClients) {
                         webSocketClient = new WebSocketClient(userId: user, projId: project, serviceUrl: skillsService.getServiceUrl(), skillsService: skillsService)
                         webSocketClient = webSocketClient.init(pkiMode)
                         userToClientIdCache.add(user, key)
-                        userProjectWebSocketClient.put(key, webSocketClient)
+                        clientIdToWebSocketClient.put(key, webSocketClient)
+                        clientCount++
                     }
                 }finally {
                     clientLock.writeLock().unlock()
@@ -66,8 +69,18 @@ class WebSocketClientManager {
         try {
             List<String> clientIds = userToClientIdCache.remove(user)
             clientIds?.each {
-                WebSocketClient client = userProjectWebSocketClient.remove(it)
+                WebSocketClient client = clientIdToWebSocketClient.remove(it)
                 client?.close()
+                clientCount--
+            }
+            if(log.isDebugEnabled()) {
+                int count = 0
+                int distinctUsers = 0
+                userToClientIdCache.each {
+                    count+=it.value?.size()
+                    distinctUsers++
+                }
+                log.info("There are currently [${count}] (or is it [${clientCount}]) WebSocketClient instances for [${distinctUsers}] unique users")
             }
         } finally {
             clientLock.writeLock().unlock()

@@ -20,7 +20,7 @@ import groovy.util.logging.Slf4j
 
 @Slf4j
 abstract class AbstractUserIdFactory implements UserIdFactory{
-    protected final Random random = new Random()
+    protected static final Random random = new Random()
 
     protected final ListChangeDecorator<UserWithExpiration> currentActiveUsers
     protected final List<String> userIds
@@ -38,7 +38,7 @@ abstract class AbstractUserIdFactory implements UserIdFactory{
         this.currentActiveUsers.getRemovedListeners()?.add(removedListener)
     }
 
-    protected Date getRandomUserExpiration() {
+    protected static Date getRandomUserExpiration() {
         int expirationIMinutes = random.nextInt(25) + 5
         Date expirationDate
         use(TimeCategory) {
@@ -64,7 +64,7 @@ abstract class AbstractUserIdFactory implements UserIdFactory{
             currentActiveUsers.remove(userWithExpiration)
             currentActiveUsers.add(newActiveUser)
             userWithExpiration = newActiveUser
-            log.info("New Active user [{}]", newActiveUser)
+            log.debug("New Active user [{}]", newActiveUser)
         }
 
         return userWithExpiration.userId

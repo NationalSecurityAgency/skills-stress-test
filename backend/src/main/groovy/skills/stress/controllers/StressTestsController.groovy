@@ -50,6 +50,9 @@ class StressTestsController {
     @Value('#{"${skills.stress.prependToDescription}"}')
     String prependToDescription
 
+    @Value('#{${skills.stress.maxConcurrentWebSocketClients:10}}')
+    Integer maxConcurrentWebSocketClients = 10
+
     HitSkillsHard hitSkillsHard
 
     @Autowired
@@ -90,7 +93,8 @@ class StressTestsController {
                 pkiMode: pkiMode,
                 pkiModeUserIdFilePath: pkiModeUserIdsFilePath,
                 prependToDescription: prependToDescription,
-                errorTracker: errorTracker
+                errorTracker: errorTracker,
+                numMaxWebsocketClients: maxConcurrentWebSocketClients
         ).init()
         hitSkillsHard.run()
 
@@ -101,8 +105,8 @@ class StressTestsController {
     @ResponseBody
     def stop() {
         log.info("Stopping Stress Tests")
-        hitSkillsHard.stop()
-        return [status: "success"]
+        hitSkillsHard?.stop()
+        return [ status: "success" ]
     }
 
 

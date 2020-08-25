@@ -15,7 +15,7 @@
  */
 package skills.stress
 
-import callStack.profiler.CProf
+
 import callStack.profiler.ProfThreadPool
 import groovy.util.logging.Slf4j
 import skills.stress.errors.ErrorTracker
@@ -23,14 +23,8 @@ import skills.stress.model.StatsRes
 import skills.stress.model.StatusRes
 import skills.stress.services.SkillServiceFactory
 import skills.stress.services.SkillsService
-
 import skills.stress.stats.StatsHelper
-import skills.stress.users.FileBasedUserIdFactory
-import skills.stress.users.RemovedListener
-import skills.stress.users.SimpleUserIdFactory
-import skills.stress.users.DateFactory
-import skills.stress.users.UserIdFactory
-import skills.stress.users.UserWithExpiration
+import skills.stress.users.*
 
 import java.util.concurrent.Callable
 import java.util.concurrent.Future
@@ -47,6 +41,7 @@ class HitSkillsHard {
     int hasDependenciesEveryNProjects = 5
     int numUsersPerApp = 100
     int numConcurrentThreads = 5
+    int numMaxWebsocketClients = 25
     boolean removeExistingTestProjects = false
     String serviceUrl = "http://localhost:8080"
     boolean pkiMode = false
@@ -81,7 +76,7 @@ class HitSkillsHard {
     }
 
     HitSkillsHard init() {
-        webSocketClientManager = new WebSocketClientManager(pkiMode: pkiMode)
+        webSocketClientManager = new WebSocketClientManager(pkiMode: pkiMode, maxClients: numMaxWebsocketClients)
 
         if (pkiMode) {
             userIdFactory = FileBasedUserIdFactory.build(pkiModeUserIdFilePath)
@@ -95,6 +90,7 @@ class HitSkillsHard {
         userIdFactory.addActiveUserRemovedListener(new RemovedListener<UserWithExpiration>() {
             @Override
             void itemRemoved(UserWithExpiration item) {
+                log.debug("removing all websocket clients for user [${item.userId}]")
                 webSocketClientManager.cleanUpUser(item.userId)
             }
         })

@@ -25,7 +25,7 @@ class FileBasedUserIdFactory extends AbstractUserIdFactory {
     public static FileBasedUserIdFactory build(String path) {
         File f = new File(path)
         if (!f.exists()) {
-            throw new IllegalArgumentException("[{}] does not exist", path)
+            throw new IllegalArgumentException("[${path}] does not exist")
         }
         List<String> userIdsTmp = []
         f.eachLine {
@@ -33,17 +33,17 @@ class FileBasedUserIdFactory extends AbstractUserIdFactory {
         }
 
         List<UserWithExpiration> currentActiveUsers = Collections.synchronizedList([])
-        List<String> userIds = Collections.unmodifiableList(userIdsTmp)
-        log.info("Loaded [{}] users", userIds.size())
-        int numCurrentActiveUsers = Math.min(5000, (userIds.size() / 2).toInteger())
+        List<String> uids = Collections.unmodifiableList(userIdsTmp)
+        log.info("Loaded [{}] users", uids.size())
+        int numCurrentActiveUsers = Math.min(5000, (uids.size() / 2).toInteger())
         log.info("[{}] active users users", numCurrentActiveUsers)
-        (0..numCurrentActiveUsers - 1).each {
-            String userId = userIds[it]
+        for(int i=0; i<numCurrentActiveUsers; i++){
+            String userId = uids[i]
             Date expirationDate = getRandomUserExpiration()
             currentActiveUsers.add(new UserWithExpiration(userId: userId, expireOn: expirationDate))
         }
         log.info("Loaded [{}] active users", currentActiveUsers.size())
-        return new FileBasedUserIdFactory(currentActiveUsers, userIds)
+        return new FileBasedUserIdFactory(currentActiveUsers, uids)
     }
 
     private FileBasedUserIdFactory(List<UserWithExpiration> currentActiveUsers, List<String> userIds){
