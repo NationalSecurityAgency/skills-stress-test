@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.SynchronousQueue
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -33,7 +34,7 @@ class ErrorTracker {
     int numErrorsToKeep = 20
 
     private final Queue<SeenError> errors = new ConcurrentLinkedQueue()
-    private final SynchronousQueue<SeenError> processIncomingErrors = new SynchronousQueue<>();
+    private final LinkedBlockingQueue<SeenError> processIncomingErrors = new LinkedBlockingQueue<>();
     private final AtomicBoolean doRunErrorsProcessor = new AtomicBoolean(true)
 
     @PostConstruct
