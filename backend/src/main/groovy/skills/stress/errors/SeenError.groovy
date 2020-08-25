@@ -15,15 +15,13 @@
  */
 package skills.stress.errors
 
-import org.apache.http.HttpStatus
 
 import java.util.concurrent.ConcurrentLinkedQueue
 
 class SeenError {
+    // id is used by the client / ui
     String id = UUID.randomUUID().toString()
     Date lastSeen = new Date()
-    String fullError
-    String msg
     int numOccur = 1
     String httpStatus
     String serverBody
