@@ -15,11 +15,13 @@
   },
   "dependencies": {
     "axios": "0.19.2",
-    "bootstrap": "4.4.1",
-    "bootstrap-vue": "2.5.0",
+    "bootstrap": "4.5.2",
+    "bootstrap-vue": "2.16.0",
     "core-js": "2.6.11",
+    "moment": "2.27.0",
     "numeral": "2.0.6",
-    "vue": "2.6.11"
+    "vue": "2.6.11",
+    "vue-router": "3.4.3"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "3.12.0",

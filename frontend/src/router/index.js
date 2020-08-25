@@ -13,21 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Vue from 'vue'
-import App from './App.vue'
-import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue'
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
-import './filters/NumberFilter';
-import './filters/DateFilter';
-import './filters/TimePassedFilter';
-import router from './router';
+import Vue from 'vue';
+import Router from 'vue-router';
+import LandingPage from '@/components/home/LandingPage';
+import ErrorsPage from '@/components/errors/ErrorsPage';
 
-Vue.use(BootstrapVue)
-Vue.use(BootstrapVueIcons)
-Vue.config.productionTip = false
+Vue.use(Router);
 
-new Vue({
-  render: h => h(App),
-  router,
-}).$mount('#app')
+const router = new Router({
+  mode: 'history',
+  routes: [
+    {
+      path: '/',
+      component: LandingPage,
+    },
+    {
+      path: '/errors',
+      component: ErrorsPage,
+    }
+  ],
+});
+
+export default router;

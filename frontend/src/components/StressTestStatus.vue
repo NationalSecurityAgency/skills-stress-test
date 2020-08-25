@@ -39,17 +39,23 @@ limitations under the License.
         </div>
         <div class="col-md text-center text-md-right">
           <h5 class="text-muted">
-            Errors: <span class="text-warning">{{ status.numErrors }}</span> <span class="d-none d-md-inline mx-2">|</span> Running: <span class="text-success">{{ running || false }}</span>
+            Errors: <router-link to="/errors"><span class="text-warning">{{ status.numErrors }}</span></router-link> <span class="d-none d-md-inline mx-2">|</span> Running: <span class="text-success">{{ running || false }}</span>
           </h5>
         </div>
       </div>
     </div>
     <div class="card-body">
-      <h3 class="text-left border-bottom text-info">Report Events</h3>
-      <stress-tests-metrics :report-skills-res="status.reportSkillsRes"/>
-
-      <h3 class="text-left border-bottom text-info mt-5">Client Display</h3>
-      <stress-tests-metrics :report-skills-res="status.clientDisplayStats"/>
+      <div v-if="status.reportSkillsRes">
+        <h3 class="text-left border-bottom text-info">Report Events</h3>
+        <stress-tests-metrics :report-skills-res="status.reportSkillsRes"/>
+      </div>
+      <div v-if="status.clientDisplayStats">
+       <h3 class="text-left border-bottom text-info mt-5">Client Display</h3>
+        <stress-tests-metrics :report-skills-res="status.clientDisplayStats"/>
+      </div>
+      <div v-if="!status.reportSkillsRes && !status.clientDisplayStats" class="text-muted">
+        No Runs Yet...
+      </div>
     </div>
   </div>
 </template>

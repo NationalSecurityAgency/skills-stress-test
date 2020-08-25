@@ -16,7 +16,16 @@ limitations under the License.
 <template>
     <div>
         <b-navbar toggleable="lg" type="dark" variant="info">
-            <b-navbar-brand href="#">Skills Service Stress Tests</b-navbar-brand>
+          <b-navbar-brand>
+            <router-link to="/" class="text-white"><b-icon icon="hammer" class="mr-1" />SkillTree Stress Tests</router-link>
+          </b-navbar-brand>
+          <b-collapse id="nav-collapse" is-nav>
+            <b-navbar-nav>
+              <b-nav-item>
+                <router-link to="/errors" class="text-white">Errors</router-link>
+              </b-nav-item>
+            </b-navbar-nav>
+          </b-collapse>
         </b-navbar>
     </div>
 </template>
