@@ -19,19 +19,14 @@ import callStack.profiler.Profile
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.commons.io.IOUtils
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
+import org.springframework.http.*
 import org.springframework.http.client.ClientHttpResponse
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.ResponseErrorHandler
 import org.springframework.web.client.RestTemplate
+import skills.stress.errors.ErrorTracker
 
 import java.nio.charset.Charset
 
@@ -43,7 +38,8 @@ class SkillsService {
 
     RestTemplate restTemplate = new RestTemplate()
 
-    SkillsService(String serviceUrl, boolean pkiMode) {
+
+    SkillsService(String serviceUrl, boolean pkiMode, ErrorTracker errorTracker) {
         this.serviceUrl = serviceUrl;
         this.pkiMode = pkiMode
 //        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
@@ -52,10 +48,16 @@ class SkillsService {
             boolean hasError(ClientHttpResponse clientHttpResponse) throws IOException {
                 if (clientHttpResponse.getStatusCode() != HttpStatus.OK) {
                     StringBuilder msg = new StringBuilder()
-                    msg.append("Status code: [" + clientHttpResponse.getStatusCode() + "]\n");
-                    msg.append("Response: [" + clientHttpResponse.getStatusText() + "]\n");
-                    msg.append("Body: " + IOUtils.toString(clientHttpResponse.getBody(), Charset.defaultCharset()));
+                    HttpStatus status = clientHttpResponse.getStatusCode();
+                    String body = IOUtils.toString(clientHttpResponse.getBody(), Charset.defaultCharset())
+                    String response = clientHttpResponse.getStatusText();
+                    msg.append("Status code: [" + status + "]\n");
+                    msg.append("Response: [" + response + "]\n");
+                    msg.append("Body: " + body);
                     log.error(msg.toString());
+
+                    errorTracker.track(status.toString(), response, body)
+
                     return true
                 }
                 return false
@@ -73,7 +75,7 @@ class SkillsService {
                 msg.append("Status code: [" + clientHttpResponse.getStatusCode() + "]\n");
                 msg.append("Response: [" + clientHttpResponse.getStatusText() + "]\n");
                 msg.append("Body: " + IOUtils.toString(clientHttpResponse.getBody(), Charset.defaultCharset()));
-                log.error(msg.toString());
+//                log.error(msg.toString());
                 throw new HttpClientErrorException(clientHttpResponse.statusCode, msg.toString())
             }
         })

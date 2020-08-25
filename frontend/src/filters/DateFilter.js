@@ -13,21 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Vue from 'vue'
-import App from './App.vue'
-import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue'
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
-import './filters/NumberFilter';
-import './filters/DateFilter';
-import './filters/TimePassedFilter';
-import router from './router';
+import Vue from 'vue';
+import moment from 'moment';
 
-Vue.use(BootstrapVue)
-Vue.use(BootstrapVueIcons)
-Vue.config.productionTip = false
+const dateFormatter = value => moment(value).format('YYYY-MM-DD HH:mm');
+Vue.filter('date', dateFormatter);
 
-new Vue({
-  render: h => h(App),
-  router,
-}).$mount('#app')
+
+// this allows to call this function from an js code; to learn more about that read about javascript modules
+// import DateFilter from 'src/DateFilter.js'
+//    DateFilter(dateStrVAlue)
+export default dateFormatter;

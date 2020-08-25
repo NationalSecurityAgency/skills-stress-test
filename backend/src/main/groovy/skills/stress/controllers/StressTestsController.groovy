@@ -16,6 +16,7 @@
 package skills.stress.controllers
 
 import groovy.util.logging.Slf4j
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import skills.stress.HitSkillsHard
+import skills.stress.errors.ErrorTracker
 import skills.stress.model.StatusRes
 import skills.stress.model.StressTestParams
 
@@ -50,10 +52,13 @@ class StressTestsController {
 
     HitSkillsHard hitSkillsHard
 
+    @Autowired
+    ErrorTracker errorTracker
+
     @PostConstruct
-    void init(){
+    void init() {
         log.info("Is PKI Mode: {}", pkiMode)
-        if (pkiMode){
+        if (pkiMode) {
             assert pkiModeUserIdsFilePath
         }
     }
@@ -68,6 +73,9 @@ class StressTestsController {
     @ResponseBody
     def startStress(@RequestBody StressTestParams stressTestParams) {
         log.info("Starting stress test: {}", stressTestParams)
+
+        errorTracker.reset()
+
         StressTestParams params = stressTestParams
         hitSkillsHard = new HitSkillsHard(
                 numProjects: params.numProjects,
@@ -82,10 +90,11 @@ class StressTestsController {
                 pkiMode: pkiMode,
                 pkiModeUserIdFilePath: pkiModeUserIdsFilePath,
                 prependToDescription: prependToDescription,
+                errorTracker: errorTracker
         ).init()
         hitSkillsHard.run()
 
-        return [ status: "success" ]
+        return [status: "success"]
     }
 
     @RequestMapping(value = "/stop", method = [RequestMethod.PUT, RequestMethod.POST], produces = MediaType.APPLICATION_JSON_VALUE)
@@ -93,6 +102,13 @@ class StressTestsController {
     def stop() {
         log.info("Stopping Stress Tests")
         hitSkillsHard.stop()
-        return [ status: "success" ]
+        return [status: "success"]
+    }
+
+
+    @RequestMapping(value = "/errors", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    def getErrors() {
+        return errorTracker.getErrors()
     }
 }

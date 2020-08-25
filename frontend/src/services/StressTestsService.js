@@ -28,4 +28,8 @@ export default {
         return axios.post('/stress/stop')
             .then(response => response.data);
     },
+    getErrors() {
+        return axios.get('/stress/errors')
+            .then(response => response.data);
+    },
 };

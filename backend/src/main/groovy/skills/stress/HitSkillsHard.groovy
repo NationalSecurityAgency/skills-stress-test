@@ -18,6 +18,7 @@ package skills.stress
 import callStack.profiler.CProf
 import callStack.profiler.ProfThreadPool
 import groovy.util.logging.Slf4j
+import skills.stress.errors.ErrorTracker
 import skills.stress.model.StatsRes
 import skills.stress.model.StatusRes
 import skills.stress.services.SkillServiceFactory
@@ -57,6 +58,7 @@ class HitSkillsHard {
     DateFactory userAndDateFactory
     UserIdFactory userIdFactory
     SkillServiceFactory skillServiceFactory
+    ErrorTracker errorTracker
 
     void stop() {
         shouldRun.set(false)
@@ -88,7 +90,7 @@ class HitSkillsHard {
                 numDates: 365
         )
 
-        skillServiceFactory = new SkillServiceFactory(serviceUrl: serviceUrl, pkiMode: pkiMode, userIdFactory: userIdFactory)
+        skillServiceFactory = new SkillServiceFactory(serviceUrl: serviceUrl, pkiMode: pkiMode, userIdFactory: userIdFactory, errorTracker: errorTracker)
 
         createSkillsDef = new CreateSkillsDef(
                 numProjects: numProjects,

@@ -30,17 +30,32 @@ limitations under the License.
 */
 <template>
   <div v-if="status" class="card">
-    <div class="card-header text-left text-uppercase text-primary">
-      <h5>STRESS TEST RUN<span class="float-right text-muted">Running: <span class="text-success">{{
-          running || false
-        }}</span></span></h5>
+    <div class="card-header text-center text-md-left text-uppercase text-primary">
+      <div class="row">
+        <div class="col">
+          <h5>
+            STRESS TEST RUN
+          </h5>
+        </div>
+        <div class="col-md text-center text-md-right">
+          <h5 class="text-muted">
+            Errors: <router-link to="/errors"><span class="text-warning">{{ status.numErrors }}</span></router-link> <span class="d-none d-md-inline mx-2">|</span> Running: <span class="text-success">{{ running || false }}</span>
+          </h5>
+        </div>
+      </div>
     </div>
     <div class="card-body">
-      <h3 class="text-left border-bottom text-info">Report Events</h3>
-      <stress-tests-metrics :report-skills-res="status.reportSkillsRes"/>
-
-      <h3 class="text-left border-bottom text-info mt-5">Client Display</h3>
-      <stress-tests-metrics :report-skills-res="status.clientDisplayStats"/>
+      <div v-if="status.reportSkillsRes">
+        <h3 class="text-left border-bottom text-info">Report Events</h3>
+        <stress-tests-metrics :report-skills-res="status.reportSkillsRes"/>
+      </div>
+      <div v-if="status.clientDisplayStats">
+       <h3 class="text-left border-bottom text-info mt-5">Client Display</h3>
+        <stress-tests-metrics :report-skills-res="status.clientDisplayStats"/>
+      </div>
+      <div v-if="!status.reportSkillsRes && !status.clientDisplayStats" class="text-muted">
+        No Runs Yet...
+      </div>
     </div>
   </div>
 </template>
