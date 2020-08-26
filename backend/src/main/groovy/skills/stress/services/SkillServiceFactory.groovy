@@ -15,16 +15,20 @@
  */
 package skills.stress.services
 
+import groovy.util.logging.Slf4j
 import skills.stress.CreateSkillsDef
+import skills.stress.errors.ErrorTracker
 import skills.stress.services.SkillsService
 import skills.stress.users.UserIdFactory
 
+@Slf4j
 class SkillServiceFactory {
 
     String serviceUrl = "http://localhost:8080"
     boolean pkiMode = false
-    private Map<String, SkillsService> cache = Collections.synchronizedMap([:])
+    private final Map<String, SkillsService> cache = Collections.synchronizedMap([:])
     UserIdFactory userIdFactory
+    ErrorTracker errorTracker
 
     synchronized SkillsService getServiceByProjectIndex(Integer projectIndex) {
         assert serviceUrl
@@ -32,8 +36,9 @@ class SkillServiceFactory {
         String projectId = CreateSkillsDef.getProjectId(projectIndex)
         SkillsService service = cache.get(projectId)
         if (!service) {
-            service = new SkillsService(serviceUrl, pkiMode)
+            service = new SkillsService(serviceUrl, pkiMode, errorTracker)
             cache.put(projectId, service)
+            log.info("Initialized service for [${projectId}]. Cache size=[${cache.size()}]")
         }
         return service
     }

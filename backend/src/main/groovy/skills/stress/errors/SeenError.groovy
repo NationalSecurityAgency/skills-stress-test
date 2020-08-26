@@ -13,21 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package skills.stress.users
+package skills.stress.errors
 
-import callStack.profiler.Profile
-import groovy.time.TimeCategory
 
-class DateFactory {
+import java.util.concurrent.ConcurrentLinkedQueue
 
-    int numDates = 365
+class SeenError {
+    // id is used by the client / ui
+    String id = UUID.randomUUID().toString()
+    Date lastSeen = new Date()
+    int numOccur = 1
+    String httpStatus
+    String serverBody
+    String serverResponse
+    Queue<SeenError> latestErrors = new ConcurrentLinkedQueue<SeenError>()
 
-    Random r = new Random()
-    @Profile
-    Date getDate(){
-        int ranNum = r.nextInt(numDates)
-        use (TimeCategory) {
-            return ranNum.days.ago
+    synchronized void addError(SeenError seenError) {
+        lastSeen = new Date()
+        numOccur++
+        latestErrors.add(seenError)
+        if (latestErrors.size() > 10){
+            latestErrors.remove()
         }
     }
 }

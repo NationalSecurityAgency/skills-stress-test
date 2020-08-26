@@ -15,8 +15,10 @@
  */
 package skills.stress
 
+import callStack.profiler.CProf
 import callStack.profiler.ProfThreadPool
 import groovy.util.logging.Slf4j
+import skills.stress.errors.ErrorTracker
 import skills.stress.model.StatsRes
 import skills.stress.model.StatusRes
 import skills.stress.services.SkillServiceFactory
@@ -56,6 +58,7 @@ class HitSkillsHard {
     DateFactory userAndDateFactory
     UserIdFactory userIdFactory
     SkillServiceFactory skillServiceFactory
+    ErrorTracker errorTracker
 
     void stop() {
         shouldRun.set(false)
@@ -87,7 +90,7 @@ class HitSkillsHard {
                 numDates: 365
         )
 
-        skillServiceFactory = new SkillServiceFactory(serviceUrl: serviceUrl, pkiMode: pkiMode, userIdFactory: userIdFactory)
+        skillServiceFactory = new SkillServiceFactory(serviceUrl: serviceUrl, pkiMode: pkiMode, userIdFactory: userIdFactory, errorTracker: errorTracker)
 
         createSkillsDef = new CreateSkillsDef(
                 numProjects: numProjects,
@@ -139,16 +142,24 @@ class HitSkillsHard {
 
     void reportEvents() {
         performWorkInThread { SkillsService service, CreateSkillsDef.RandomLookupKey randomLookupKey ->
+            // time consuming lookup for large number of users
+            String userId = userIdFactory.userId
+            Date date = userAndDateFactory.date
+            Map defParams = [projectId: randomLookupKey.projId, skillId: randomLookupKey.skillId]
+
             statsHelper.startEvent()
-            service.addSkill([projectId: randomLookupKey.projId, skillId: randomLookupKey.skillId], userIdFactory.userId, userAndDateFactory.date)
+            service.addSkill(defParams, userId, date)
             statsHelper.endEvent()
         }
     }
 
     void clientDisplaySimulation() {
         performWorkInThread { SkillsService service, CreateSkillsDef.RandomLookupKey randomLookupKey ->
+            String userId = userIdFactory.userId
+            String projectId = randomLookupKey.projId
+
             clientDisplayStatsHelper.startEvent()
-            service.getClientDisplayProjectSummary(randomLookupKey.projId, userIdFactory.userId)
+            service.getClientDisplayProjectSummary(projectId, userId)
             clientDisplayStatsHelper.endEvent()
         }
     }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2020 SkillTree
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,21 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package skills.stress.users
+import Vue from 'vue';
+import moment from 'moment';
 
-import callStack.profiler.Profile
-import groovy.time.TimeCategory
+const dateFormatter = value => moment(value).format('YYYY-MM-DD HH:mm');
+Vue.filter('date', dateFormatter);
 
-class DateFactory {
 
-    int numDates = 365
-
-    Random r = new Random()
-    @Profile
-    Date getDate(){
-        int ranNum = r.nextInt(numDates)
-        use (TimeCategory) {
-            return ranNum.days.ago
-        }
-    }
-}
+// this allows to call this function from an js code; to learn more about that read about javascript modules
+// import DateFilter from 'src/DateFilter.js'
+//    DateFilter(dateStrVAlue)
+export default dateFormatter;

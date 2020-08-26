@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2020 SkillTree
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,21 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package skills.stress.users
+import Vue from 'vue';
+import Router from 'vue-router';
+import LandingPage from '@/components/home/LandingPage';
+import ErrorsPage from '@/components/errors/ErrorsPage';
 
-import callStack.profiler.Profile
-import groovy.time.TimeCategory
+Vue.use(Router);
 
-class DateFactory {
-
-    int numDates = 365
-
-    Random r = new Random()
-    @Profile
-    Date getDate(){
-        int ranNum = r.nextInt(numDates)
-        use (TimeCategory) {
-            return ranNum.days.ago
-        }
+const router = new Router({
+  mode: 'history',
+  routes: [
+    {
+      path: '/',
+      component: LandingPage,
+    },
+    {
+      path: '/errors',
+      component: ErrorsPage,
     }
-}
+  ],
+});
+
+export default router;
