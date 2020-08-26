@@ -112,7 +112,7 @@ class ListChangeDecorator<T> implements List<T> {
 
     @Override
     boolean retainAll(Collection<?> c) {
-        //inefficent but we don''t use this anywhere
+        //inefficent but we don't use this anywhere
         List<T> tmp = new ArrayList<T>(decorated)
         boolean changed = decorated.retainAll(c)
         if (changed) {

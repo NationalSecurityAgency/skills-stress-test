@@ -118,7 +118,6 @@ class WebSocketClient {
         return this
     }
 
-    //TODO: this should be moved to another class earlier in the flow and injected into the client or the client manager
     private SSLContext loadSslContext() {
         if (!cachedContext) {
             SSLContext sslContext = SSLContext.getInstance("TLS");

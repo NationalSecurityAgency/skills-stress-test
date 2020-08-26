@@ -80,7 +80,7 @@ class WebSocketClientManager {
                     count+=it.value?.size()
                     distinctUsers++
                 }
-                log.info("There are currently [${count}] (or is it [${clientCount}]) WebSocketClient instances for [${distinctUsers}] unique users")
+                log.info("There are currently [${count}] WebSocketClient instances for [${distinctUsers}] unique users")
             }
         } finally {
             clientLock.writeLock().unlock()

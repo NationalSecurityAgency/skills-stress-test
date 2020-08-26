@@ -49,6 +49,7 @@ import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.ResponseErrorHandler
 import org.springframework.web.client.RestTemplate
 import skills.stress.errors.ErrorTracker
+import skills.stress.RestTemplateHelper
 
 import javax.net.ssl.SSLContext
 import java.nio.charset.Charset
@@ -61,10 +62,13 @@ class SkillsService {
 
     RestTemplate restTemplate
 
-
     SkillsService(String serviceUrl, boolean pkiMode, ErrorTracker errorTracker) {
+        if(!pkiMode) {
+            restTemplate = new RestTemplate(RestTemplateHelper.getTrustAllRequestFactory())
+        } else {
+            restTemplate = new RestTemplate()
+        }
         this.serviceUrl = serviceUrl;
-        restTemplate = new RestTemplate()
 
         this.pkiMode = pkiMode
 //        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
@@ -151,16 +155,15 @@ class SkillsService {
 
     @Profile
     private def post(String url, Map params) {
-        ResponseEntity<String> responseEntity =
-                restTemplate.postForEntity(url.toString(), params, String)
+        HttpEntity entity = getHttpEntity()
+        ResponseEntity<String> responseEntity = restTemplate.exchange(url.toString(), HttpMethod.POST, entity, String.class, params)
         return responseEntity.body
     }
 
     JsonSlurper jsonSlurper = new JsonSlurper()
 
     private def get(String url) {
-        ResponseEntity<String> responseEntity =
-                restTemplate.getForEntity(url.toString(), String)
+        ResponseEntity<String> responseEntity = restTemplate.exchange(url.toString(), HttpMethod.GET, getHttpEntity(), String.class)
         return jsonSlurper.parseText(responseEntity.body)
     }
 
@@ -220,27 +223,19 @@ class SkillsService {
         get("${serviceUrl}/api/projects/${projId}/subjects/${subjId}/summary?userId=${userId}")
     }
 
+    def getHttpEntity(){
+        HttpEntity entity = new HttpEntity()
+        if (authenticationToken) {
+            HttpHeaders headers = new HttpHeaders()
+            headers.set(AUTH_HEADER, "Bearer ${authenticationToken}")
+            entity = new HttpEntity(headers)
+        }
+        return entity
+    }
+
     String getClientSecret(String projectId){
         ResponseEntity<String> responseEntity = restTemplate.getForEntity("${serviceUrl}/admin/projects/${projectId}/clientSecret".toString(), String)
         responseEntity.getBody()
-    }
-
-    public ClientHttpRequestFactory getRequestFactory() {
-        TrustStrategy acceptAll = {  cert, authType -> true }
-        SSLContextBuilder builder = SSLContexts.custom()
-        SSLContext sslContext = builder.loadTrustMaterial(null, acceptAll).build()
-        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE)
-
-        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
-                .register("https", sslsf)
-                .register("http", new PlainConnectionSocketFactory())
-                .build();
-
-        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry)
-        CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(sslsf).setConnectionManager(connectionManager).build()
-
-        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient)
-        return requestFactory
     }
 
 }
