@@ -132,7 +132,7 @@ class SkillsService {
 
     @Profile
     private def post(String url, Map params) {
-        HttpEntity entity = getHttpEntity()
+        HttpEntity entity = getHttpEntity(params)
         ResponseEntity<String> responseEntity = restTemplate.exchange(url.toString(), HttpMethod.POST, entity, String.class, params)
         return responseEntity.body
     }
@@ -200,13 +200,15 @@ class SkillsService {
         get("${serviceUrl}/api/projects/${projId}/subjects/${subjId}/summary?userId=${userId}")
     }
 
-    def getHttpEntity(){
-        HttpEntity entity = new HttpEntity()
+    def getHttpEntity(Map params){
+        HttpHeaders headers = new HttpHeaders()
+        headers.setContentType(MediaType.APPLICATION_JSON)
+        headers.setAccept([MediaType.APPLICATION_JSON])
         if (authenticationToken) {
-            HttpHeaders headers = new HttpHeaders()
             headers.set(AUTH_HEADER, "Bearer ${authenticationToken}")
-            entity = new HttpEntity(headers)
         }
+        HttpEntity entity = new HttpEntity(params, headers)
+
         return entity
     }
 
