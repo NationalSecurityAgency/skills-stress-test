@@ -35,7 +35,7 @@ class FileBasedUserIdFactory extends AbstractUserIdFactory {
         List<UserWithExpiration> currentActiveUsers = Collections.synchronizedList([])
         List<String> uids = Collections.unmodifiableList(userIdsTmp)
         log.info("Loaded [{}] users", uids.size())
-        int numCurrentActiveUsers = Math.min(5000, (uids.size() / 2).toInteger())
+        int numCurrentActiveUsers = Math.min(200, (uids.size() / 2).toInteger())
         log.info("[{}] active users users", numCurrentActiveUsers)
         for(int i=0; i<numCurrentActiveUsers; i++){
             String userId = uids[i]
