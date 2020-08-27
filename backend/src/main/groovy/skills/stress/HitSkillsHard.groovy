@@ -15,7 +15,7 @@
  */
 package skills.stress
 
-import callStack.profiler.CProf
+
 import callStack.profiler.ProfThreadPool
 import groovy.util.logging.Slf4j
 import skills.stress.errors.ErrorTracker
@@ -23,12 +23,8 @@ import skills.stress.model.StatsRes
 import skills.stress.model.StatusRes
 import skills.stress.services.SkillServiceFactory
 import skills.stress.services.SkillsService
-
 import skills.stress.stats.StatsHelper
-import skills.stress.users.FileBasedUserIdFactory
-import skills.stress.users.SimpleUserIdFactory
-import skills.stress.users.DateFactory
-import skills.stress.users.UserIdFactory
+import skills.stress.users.*
 
 import java.util.concurrent.Callable
 import java.util.concurrent.Future
@@ -45,6 +41,7 @@ class HitSkillsHard {
     int hasDependenciesEveryNProjects = 5
     int numUsersPerApp = 100
     int numConcurrentThreads = 5
+    int numMaxWebsocketClients = 25
     boolean removeExistingTestProjects = false
     String serviceUrl = "http://localhost:8080"
     boolean pkiMode = false
@@ -59,6 +56,7 @@ class HitSkillsHard {
     UserIdFactory userIdFactory
     SkillServiceFactory skillServiceFactory
     ErrorTracker errorTracker
+    WebSocketClientManager webSocketClientManager
 
     void stop() {
         shouldRun.set(false)
@@ -78,14 +76,25 @@ class HitSkillsHard {
     }
 
     HitSkillsHard init() {
+        webSocketClientManager = new WebSocketClientManager(pkiMode: pkiMode, maxClients: numMaxWebsocketClients)
+
         if (pkiMode) {
-            userIdFactory = new FileBasedUserIdFactory(pkiModeUserIdFilePath)
+            userIdFactory = FileBasedUserIdFactory.build(pkiModeUserIdFilePath)
             if (numProjects > userIdFactory.numUsers()){
                 throw new IllegalArgumentException("In PKI Mode must not supply more projects than actual users. [$numProjects] > [${userIdFactory.numUsers()}]")
             }
         } else {
-            userIdFactory = new SimpleUserIdFactory(numUsers: numUsersPerApp)
+            userIdFactory = SimpleUserIdFactory.build(numUsersPerApp)
         }
+
+        userIdFactory.addActiveUserRemovedListener(new RemovedListener<UserWithExpiration>() {
+            @Override
+            void itemRemoved(UserWithExpiration item) {
+                log.debug("removing all websocket clients for user [${item.userId}]")
+                webSocketClientManager.cleanUpUser(item.userId)
+            }
+        })
+
         userAndDateFactory = new DateFactory(
                 numDates: 365
         )
@@ -146,6 +155,9 @@ class HitSkillsHard {
             String userId = userIdFactory.userId
             Date date = userAndDateFactory.date
             Map defParams = [projectId: randomLookupKey.projId, skillId: randomLookupKey.skillId]
+            //at the moment, we don't need to do anything with the actual client that is created here
+            //this will impact timing metrics, however each userId/projId pairing is only created once
+            webSocketClientManager.get(userId, randomLookupKey.projId, service)
 
             statsHelper.startEvent()
             service.addSkill(defParams, userId, date)

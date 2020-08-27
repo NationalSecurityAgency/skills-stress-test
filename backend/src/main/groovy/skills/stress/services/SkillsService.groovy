@@ -26,6 +26,7 @@ import org.springframework.util.MultiValueMap
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.ResponseErrorHandler
 import org.springframework.web.client.RestTemplate
+import skills.stress.RestTemplateHelper
 import skills.stress.errors.ErrorTracker
 
 import java.nio.charset.Charset
@@ -36,11 +37,16 @@ class SkillsService {
     String serviceUrl
     boolean pkiMode
 
-    RestTemplate restTemplate = new RestTemplate()
-
+    RestTemplate restTemplate
 
     SkillsService(String serviceUrl, boolean pkiMode, ErrorTracker errorTracker) {
+        if(!pkiMode) {
+            restTemplate = new RestTemplate(RestTemplateHelper.getTrustAllRequestFactory())
+        } else {
+            restTemplate = new RestTemplate()
+        }
         this.serviceUrl = serviceUrl;
+
         this.pkiMode = pkiMode
 //        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         restTemplate.setErrorHandler(new ResponseErrorHandler() {
@@ -126,16 +132,15 @@ class SkillsService {
 
     @Profile
     private def post(String url, Map params) {
-        ResponseEntity<String> responseEntity =
-                restTemplate.postForEntity(url.toString(), params, String)
+        HttpEntity entity = getHttpEntity(params)
+        ResponseEntity<String> responseEntity = restTemplate.exchange(url.toString(), HttpMethod.POST, entity, String.class, params)
         return responseEntity.body
     }
 
     JsonSlurper jsonSlurper = new JsonSlurper()
 
     private def get(String url) {
-        ResponseEntity<String> responseEntity =
-                restTemplate.getForEntity(url.toString(), String)
+        ResponseEntity<String> responseEntity = restTemplate.exchange(url.toString(), HttpMethod.GET, getHttpEntity(), String.class)
         return jsonSlurper.parseText(responseEntity.body)
     }
 
@@ -193,6 +198,23 @@ class SkillsService {
 
     def getClientDisplaySubjectSummary(String projId, String subjId, String userId) {
         get("${serviceUrl}/api/projects/${projId}/subjects/${subjId}/summary?userId=${userId}")
+    }
+
+    def getHttpEntity(Map params){
+        HttpHeaders headers = new HttpHeaders()
+        headers.setContentType(MediaType.APPLICATION_JSON)
+        headers.setAccept([MediaType.APPLICATION_JSON])
+        if (authenticationToken) {
+            headers.set(AUTH_HEADER, "Bearer ${authenticationToken}")
+        }
+        HttpEntity entity = new HttpEntity(params, headers)
+
+        return entity
+    }
+
+    String getClientSecret(String projectId){
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity("${serviceUrl}/admin/projects/${projectId}/clientSecret".toString(), String)
+        responseEntity.getBody()
     }
 
 }

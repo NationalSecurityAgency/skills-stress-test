@@ -38,6 +38,7 @@ class CreateSkillsDef {
 
     List<Proj> create() {
         if (remove) {
+            log.info("removing previous projects")
             removeProjects()
         }
         return saveProjectsDefs()
@@ -188,6 +189,7 @@ class CreateSkillsDef {
 
     private List<Proj> saveProjectsDefs(List<Proj> projDefs = null) {
         projDefs = projDefs ?: createDef()
+        log.info("identifying projects to be created")
         List<Proj> projToCreate = projDefs.findAll {
             SkillsService service = skillServiceFactory.getServiceByProjectIndex(it.projIndex)
             !service.projectIdExists([projectId: it.id])
@@ -229,13 +231,18 @@ class CreateSkillsDef {
     private List saveProject(Proj proj) {
         SkillsService service = skillServiceFactory.getServiceByProjectIndex(proj.projIndex)
 
+        log.info("creating project [${proj.id}]")
         service.createProject([projectId: proj.id, name: proj.name])
+
+        log.info("creating [${proj.subjs?.size()}] subjects for project [${proj.id}]")
         proj.subjs.each { Subj subj ->
             String subjId = subj.id
             service.createSubject([projectId  : proj.id,
                                    subjectId  : subjId,
                                    name       : subj.name.toString(),
                                    description: "${prependToDescription}Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.".toString()])
+
+            log.info("creating [${subj.skills?.size()}] skills for subject [${subjId}] for project [${proj.id}]")
             subj.skills.each { Skill skill ->
                 service.createSkill([projectId  : proj.id, subjectId: subjId, skillId: skill.id,
                                      name       : skill.name,
@@ -250,6 +257,7 @@ class CreateSkillsDef {
             }
         }
 
+        log.info("creating [${proj.badges?.size()}] badges for project [${proj.id}]")
         proj.badges.each { Badge badge ->
             service.createBadge([projectId  : proj.id,
                                  badgeId    : badge.id,
@@ -264,6 +272,7 @@ class CreateSkillsDef {
 
         if (proj.hasDependencies) {
             Skill rootSkill = proj.subjs.collect({ it.skills }).flatten().find({ !it.otherDependOnMe })
+            log.info("adding dependencies for project [${proj.id}]")
             addDeps(service, proj, rootSkill)
         }
     }
