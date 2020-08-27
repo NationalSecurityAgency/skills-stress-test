@@ -15,37 +15,41 @@ limitations under the License.
 */
 <template>
   <div v-if="reportSkillsRes">
+    <h3 class="text-left border-bottom text-info font-weight-bold text-uppercase">
+      <div class="row">
+        <div class="col">
+          {{ title }}
+        </div>
+        <div class="col-md text-center text-md-right">
+          <h5 class="text-muted text-uppercase text-right">
+            Started: <span class="text-dark">{{ startTimestamp | date }}</span>
+          </h5>
+        </div>
+      </div>
+    </h3>
+
     <div class="row mb-4">
       <div class="col">
-        <p class="text-uppercase text-muted count-label">Events</p>
-        <strong class="h5">{{ reportSkillsRes.totalEvents | number }}</strong>
+        <single-stat-card title="# Events" :value="reportSkillsRes.totalEvents" icon="calculator" class="text-primary border-left-primary"/>
       </div>
       <div class="col">
-        <p class="text-uppercase text-muted count-label">Exec Time</p>
-        <strong class="h5">{{ reportSkillsRes.totalExecTime | number }}</strong>
+        <single-stat-card title="Overall Latency Avg." :value="reportSkillsRes.avgEventResponse" icon="calendar2-check" class="text-success border-left-success"/>
+      </div>
+      <div class="col">
+        <single-stat-card title="Last 1k Latency Avg." :value="reportSkillsRes.avgEventResponseLast1k" icon="alarm"  class="text-warning border-left-warning"/>
       </div>
     </div>
 
-    <div class="row text-left">
-      <div class="col-lg border rounded p-3 mr-2">
-        <h5 class="text-uppercase">Overall</h5>
-        <div class="mb-2">Average Response Time: <span class="text-info">{{ reportSkillsRes.avgEventResponse }} ms</span>
-        </div>
-        <b-table striped hover :items="reportSkillsRes.groupedExecTimes">
-          <template v-slot:cell(numberOfEvents)="numberOfEvents">
-            {{ formatNum(numberOfEvents.value) }}
-          </template>
-        </b-table>
+    <div>
+      <chart-avg-latency-timechart :time-series="reportSkillsRes.historyOfAvgLatencyPer1k"/>
+    </div>
+
+    <div class="row mt-3">
+      <div class="col-6">
+        <group-by-exec-time-chart title="Overall Latency Breakdown"  :grouped-exec-times="reportSkillsRes.groupedExecTimes"/>
       </div>
-      <div class="col-lg border rounded p-3">
-        <h5 class="text-uppercase">Last 1K</h5>
-        <div class="mb-2">Average Response Time: <span class="text-info">{{ reportSkillsRes.avgEventResponseLast1k }} ms</span>
-        </div>
-        <b-table striped hover :items="reportSkillsRes.groupedExecTimesLast1k">
-          <template v-slot:cell(numberOfEvents)="numberOfEvents">
-            {{ formatNum(numberOfEvents.value) }}
-          </template>
-        </b-table>
+      <div class="col-6">
+        <group-by-exec-time-chart title="Last 1k Latency Breakdown" :grouped-exec-times="reportSkillsRes.groupedExecTimesLast1k"/>
       </div>
     </div>
   </div>
@@ -53,10 +57,14 @@ limitations under the License.
 
 <script>
 import NumberFilter from "@/filters/NumberFilter";
+import ChartAvgLatencyTimechart from "@/components/charts/ChartAvgLatencyTimechart";
+import GroupByExecTimeChart from "@/components/charts/GroupByExecTimeChart";
+import SingleStatCard from "@/components/metrics/SingleStatCard";
 
 export default {
   name: "StressTestsMetrics",
-  props: ['reportSkillsRes'],
+  components: {SingleStatCard, GroupByExecTimeChart, ChartAvgLatencyTimechart},
+  props: ['reportSkillsRes', 'startTimestamp', 'title'],
   methods: {
     formatNum(numVal) {
       return NumberFilter(numVal);
@@ -66,5 +74,13 @@ export default {
 </script>
 
 <style scoped>
-
+.border-left-primary {
+  border-left: .25rem solid #007bff !important;
+}
+.border-left-success {
+  border-left: .25rem solid #28a745 !important;
+}
+.border-left-warning {
+  border-left: .25rem solid #ffc107 !important;
+}
 </style>

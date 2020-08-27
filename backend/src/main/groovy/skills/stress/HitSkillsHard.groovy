@@ -47,6 +47,7 @@ class HitSkillsHard {
     boolean pkiMode = false
     String pkiModeUserIdFilePath
     String prependToDescription = ""
+    Date start = new Date()
 
     private AtomicBoolean shouldRun = new AtomicBoolean(true)
     private AtomicInteger numErrors = new AtomicInteger(0)
@@ -201,6 +202,7 @@ class HitSkillsHard {
     StatusRes buildStatus() {
         StatsRes reportSkillsRes = statsHelper.buildStatus()
         new StatusRes(
+                startTimestamp: start.time,
                 numErrors: numErrors.get(),
                 hasFailures: hasFailures,
                 running: isRunning(),

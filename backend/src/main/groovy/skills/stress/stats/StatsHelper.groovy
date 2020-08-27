@@ -30,12 +30,13 @@ class StatsHelper {
     AtomicLong totalTime = new AtomicLong(0)
 
     AtomicLong last1kTime = new AtomicLong(0)
+    AtomicLong last1kEventsCounter = new AtomicLong(0)
 
     ThreadLocal<Long> startTime = new ThreadLocal<>()
 
-    Map<String, Long> binExecTimes = Collections.synchronizedMap([:])
-    Map<String, Long> binExecTimesLast1k = Collections.synchronizedMap([:])
-
+    Map<String, Long> binExecTimes = BinStatsUtils.constructEmptyBinnedMap()
+    Map<String, Long> binExecTimesLast1k = BinStatsUtils.constructEmptyBinnedMap()
+    Map<Long, Integer> historyAvgTimePer1k = Collections.synchronizedMap([:])
     double avgEventResponse
     double avgEventResponseLast1k
 
@@ -51,15 +52,20 @@ class StatsHelper {
         BinStatsUtils.addToBinnedExecTimes(binExecTimesLast1k, execTime)
         int totalEvents = totalEvents.incrementAndGet()
         long totalExecTime = totalTime.addAndGet(execTime)
+
+        long last1kCounter = last1kEventsCounter.incrementAndGet()
         long last1kExecTime = last1kTime.addAndGet(execTime)
 
         avgEventResponse = (totalExecTime / totalEvents).trunc(2)
-        avgEventResponseLast1k = (last1kExecTime / 1000).trunc(2)
+        avgEventResponseLast1k = (last1kExecTime / last1kCounter).trunc(2)
 
         if (totalEvents % 1000 == 0) {
 //            log.info(buildMessage(totalEvents, totalExecTime, last1kExecTime))
+            historyAvgTimePer1k.put(System.currentTimeMillis(), avgEventResponseLast1k)
             last1kTime.set(0)
+            last1kEventsCounter.set(0)
             binExecTimesLast1k.clear()
+            binExecTimesLast1k.putAll(BinStatsUtils.constructEmptyBinnedMap())
         }
     }
 
@@ -96,6 +102,7 @@ class StatsHelper {
                 }?.sort({ it.groupName }),
                 avgEventResponse: avgEventResponse,
                 avgEventResponseLast1k: avgEventResponseLast1k,
+                historyOfAvgLatencyPer1k: historyAvgTimePer1k.collect({ [it.key, it.value]})
         )
     }
 }

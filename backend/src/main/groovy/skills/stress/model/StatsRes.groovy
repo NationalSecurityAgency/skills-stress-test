@@ -28,4 +28,5 @@ class StatsRes {
 
     List<ProfGroup> groupedExecTimes
     List<ProfGroup> groupedExecTimesLast1k
+    List historyOfAvgLatencyPer1k
 }

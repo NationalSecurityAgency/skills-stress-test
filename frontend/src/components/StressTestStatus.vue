@@ -29,13 +29,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 <template>
-  <div v-if="status" class="card">
-    <div class="card-header text-center text-md-left text-uppercase text-primary">
+  <div v-if="status">
+
+    <div class="text-left text-uppercase text-info mt-5 border-bottom">
       <div class="row">
         <div class="col">
-          <h5>
+          <h2 class="font-weight-bold">
             STRESS TEST RUN
-          </h5>
+          </h2>
         </div>
         <div class="col-md text-center text-md-right">
           <h5 class="text-muted">
@@ -44,14 +45,13 @@ limitations under the License.
         </div>
       </div>
     </div>
-    <div class="card-body">
+
+    <div class="mt-5">
       <div v-if="status.reportSkillsRes">
-        <h3 class="text-left border-bottom text-info">Report Events</h3>
-        <stress-tests-metrics :report-skills-res="status.reportSkillsRes"/>
+        <stress-tests-metrics :report-skills-res="status.reportSkillsRes" :start-timestamp="status.startTimestamp" title="Report Events"/>
       </div>
-      <div v-if="status.clientDisplayStats">
-       <h3 class="text-left border-bottom text-info mt-5">Client Display</h3>
-        <stress-tests-metrics :report-skills-res="status.clientDisplayStats"/>
+      <div v-if="status.clientDisplayStats" class="mt-5">
+        <stress-tests-metrics :report-skills-res="status.clientDisplayStats" :start-timestamp="status.startTimestamp" title="Client Display"/>
       </div>
       <div v-if="!status.reportSkillsRes && !status.clientDisplayStats" class="text-muted">
         No Runs Yet...

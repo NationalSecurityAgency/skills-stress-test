@@ -16,6 +16,7 @@
 package skills.stress.model
 
 class StatusRes {
+    long startTimestamp
     int numErrors = 0
     boolean hasFailures = false;
     boolean running = false;

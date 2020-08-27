@@ -21,20 +21,37 @@ class BinStatsUtils {
         assert map != null
         assert execTime >= 0
         if (execTime <= 50) {
-            incrementBinnedCount(map, "a) time <= 50")
+            incrementBinnedCount(map, bins[0])
         } else if (execTime > 50 && execTime <= 100) {
-            incrementBinnedCount(map, "b)  50 < time <= 100")
+            incrementBinnedCount(map, bins[1])
         } else if (execTime > 100 && execTime <= 150) {
-            incrementBinnedCount(map, "c) 100 < time <= 150")
+            incrementBinnedCount(map, bins[2])
         } else if (execTime > 150 && execTime <= 200) {
-            incrementBinnedCount(map, "d) 150 < time <= 200")
+            incrementBinnedCount(map, bins[3])
         } else if (execTime > 200 && execTime <= 300) {
-            incrementBinnedCount(map, "e) 200 < time <= 300")
+            incrementBinnedCount(map, bins[4])
         } else if (execTime > 300 && execTime <= 1000) {
-            incrementBinnedCount(map, "f) 300 < time <= 1s")
+            incrementBinnedCount(map, bins[5])
         } else {
-            incrementBinnedCount(map, "g) time > 1s")
+            incrementBinnedCount(map, bins[6])
         }
+    }
+
+    private static List<String> bins = [
+            "a) t <= 50" ,
+            "b) 50 < t <= 100",
+            "c) 100 < t <= 150",
+            "d) 150 < t <= 200",
+            "e) 200 < t <= 300",
+            "f) 300 < t <= 1s",
+            "g) t > 1s"
+    ]
+    static Map<String, Long> constructEmptyBinnedMap() {
+        Map<String, Long> withVals = [:]
+        bins.each {
+            withVals[it] = 0
+        }
+        return Collections.synchronizedMap(new LinkedHashMap<String, Long>(withVals))
     }
 
     private static void incrementBinnedCount(Map<String, Long> map, String name) {
