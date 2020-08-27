@@ -18,17 +18,7 @@ package skills.stress.model
 import groovy.transform.ToString
 
 @ToString(includeNames = true)
-class StatsRes {
-    long totalEvents
-    long totalExecTime
-    long totalExecTimeLast1k
-
-    double avgEventResponse
-    double avgEventResponseLast1k
-
-    List<ProfGroup> groupedExecTimes
-    List<ProfGroup> groupedExecTimesLast1k
-    List historyOfAvgLatencyPer1k
-    LabelsAndSeries explanationCounts
-    LabelsAndSeries explanationCountsLast1k
+class LabelsAndSeries {
+    List<String> labels = []
+    List<Long> series = []
 }

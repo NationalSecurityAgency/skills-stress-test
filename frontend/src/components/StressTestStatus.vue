@@ -47,11 +47,13 @@ limitations under the License.
     </div>
 
     <div class="mt-5">
-      <div v-if="status.reportSkillsRes">
+      <div v-if="status.reportSkillsRes" class="mb-5">
         <stress-tests-metrics :report-skills-res="status.reportSkillsRes" :start-timestamp="status.startTimestamp" title="Report Events"/>
       </div>
       <div v-if="status.clientDisplayStats" class="mt-5">
-        <stress-tests-metrics :report-skills-res="status.clientDisplayStats" :start-timestamp="status.startTimestamp" title="Client Display"/>
+        <stress-tests-metrics :report-skills-res="status.clientDisplayStats"
+                              :disable-res-charts="true"
+                              :start-timestamp="status.startTimestamp" title="Client Display"/>
       </div>
       <div v-if="!status.reportSkillsRes && !status.clientDisplayStats" class="text-muted">
         No Runs Yet...

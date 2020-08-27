@@ -15,9 +15,11 @@
  */
 package skills.stress.stats
 
+import groovy.json.JsonSlurper
 import groovy.transform.WithReadLock
 import groovy.transform.WithWriteLock
 import groovy.util.logging.Slf4j
+import skills.stress.model.LabelsAndSeries
 import skills.stress.model.ProfGroup
 import skills.stress.model.StatsRes
 
@@ -32,21 +34,25 @@ class StatsHelper {
     AtomicLong last1kTime = new AtomicLong(0)
     AtomicLong last1kEventsCounter = new AtomicLong(0)
 
+    JsonSlurper jsonSlurper = new JsonSlurper()
     ThreadLocal<Long> startTime = new ThreadLocal<>()
 
     Map<String, Long> binExecTimes = BinStatsUtils.constructEmptyBinnedMap()
     Map<String, Long> binExecTimesLast1k = BinStatsUtils.constructEmptyBinnedMap()
-    Map<Long, Integer> historyAvgTimePer1k = Collections.synchronizedMap([:])
+    Map<Long, Long> historyAvgTimePer1k = Collections.synchronizedMap([:])
+
+    Map<String, Long> binExplanations = Collections.synchronizedMap(ExplanationUtils.constructEmptyExplanationMap())
+    Map<String, Long> binExplanationsLast1k = Collections.synchronizedMap(ExplanationUtils.constructEmptyExplanationMap())
     double avgEventResponse
     double avgEventResponseLast1k
 
-    @WithWriteLock
+    @WithWriteLock()
     void startEvent() {
         startTime.set(System.currentTimeMillis())
     }
 
     @WithWriteLock
-    void endEvent() {
+    void endEvent(def res = null) {
         long execTime = System.currentTimeMillis() - startTime.get()
         BinStatsUtils.addToBinnedExecTimes(binExecTimes, execTime)
         BinStatsUtils.addToBinnedExecTimes(binExecTimesLast1k, execTime)
@@ -66,26 +72,16 @@ class StatsHelper {
             last1kEventsCounter.set(0)
             binExecTimesLast1k.clear()
             binExecTimesLast1k.putAll(BinStatsUtils.constructEmptyBinnedMap())
+            binExplanationsLast1k.clear()
+            binExplanationsLast1k.putAll(ExplanationUtils.constructEmptyExplanationMap())
+        }
+
+        if (res) {
+            def parsed = jsonSlurper.parseText(res)
+            ExplanationUtils.documentResult(binExplanations, parsed)
+            ExplanationUtils.documentResult(binExplanationsLast1k, parsed)
         }
     }
-
-
-//    private String buildMessage(totalEvents, totalExecTime, last1kExecTime) {
-//        List<String> msgs = [
-//                "\n--------------------------------",
-//                "Total Events: [${totalEvents}]",
-//                "Avg. Event Response: [${(totalEvents / (totalExecTime / 1000)).trunc(2)}] ms",
-//                "Avg. Event Response (last 1k events): [${(1000 / (last1kExecTime / 1000)).trunc(2)}] ms",
-//
-//        ]
-//
-//        msgs.add("Overall breakdown:")
-//        msgs.addAll(binExecTimes.collect { "  ${it.key}: ${it.value}" }.sort())
-//        msgs.add("Last 1k breakdown:")
-//        msgs.addAll(binExecTimesLast1k.collect { "  ${it.key}: ${it.value}" }.sort())
-//
-//        return msgs.join("\n")
-//    }
 
 
     @WithReadLock
@@ -102,7 +98,10 @@ class StatsHelper {
                 }?.sort({ it.groupName }),
                 avgEventResponse: avgEventResponse,
                 avgEventResponseLast1k: avgEventResponseLast1k,
-                historyOfAvgLatencyPer1k: historyAvgTimePer1k.collect({ [it.key, it.value]})
+                historyOfAvgLatencyPer1k: historyAvgTimePer1k.collect({ [it.key, it.value]}),
+                explanationCounts: ExplanationUtils.buildLabelAndSeries(binExplanations),
+                explanationCountsLast1k: ExplanationUtils.buildLabelAndSeries(binExplanationsLast1k)
         )
     }
 }
+

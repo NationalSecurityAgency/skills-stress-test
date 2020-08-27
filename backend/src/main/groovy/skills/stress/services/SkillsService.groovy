@@ -189,7 +189,7 @@ class SkillsService {
         ]
         String url = "${serviceUrl}/api/projects/${params.projectId}/skills/${params.skillId}"
 
-        post(url, clientParams)
+        return post(url, clientParams)
     }
 
     def getClientDisplayProjectSummary(String projId, String userId) {

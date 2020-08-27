@@ -17,6 +17,7 @@ package skills.stress
 
 
 import callStack.profiler.ProfThreadPool
+import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import skills.stress.errors.ErrorTracker
 import skills.stress.model.StatsRes
@@ -150,6 +151,7 @@ class HitSkillsHard {
     StatsHelper statsHelper = new StatsHelper()
     StatsHelper clientDisplayStatsHelper = new StatsHelper()
 
+    JsonSlurper jsonSlurper = new JsonSlurper()
     void reportEvents() {
         performWorkInThread { SkillsService service, CreateSkillsDef.RandomLookupKey randomLookupKey ->
             // time consuming lookup for large number of users
@@ -160,9 +162,10 @@ class HitSkillsHard {
             //this will impact timing metrics, however each userId/projId pairing is only created once
             webSocketClientManager.get(userId, randomLookupKey.projId, service)
 
+            String res
             statsHelper.startEvent()
-            service.addSkill(defParams, userId, date)
-            statsHelper.endEvent()
+            res = service.addSkill(defParams, userId, date)
+            statsHelper.endEvent(res)
         }
     }
 
