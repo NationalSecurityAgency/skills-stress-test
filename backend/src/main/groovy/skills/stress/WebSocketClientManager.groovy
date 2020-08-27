@@ -15,6 +15,7 @@
  */
 package skills.stress
 
+import callStack.profiler.Profile
 import groovy.util.logging.Slf4j
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
@@ -35,6 +36,7 @@ class WebSocketClientManager {
     private Map<String, WebSocketClient> clientIdToWebSocketClient = new HashMap<>()
     private int clientCount = 0
 
+    @Profile
     public WebSocketClient get(String user, String project, SkillsService skillsService) {
         String key = buildKey(user, project)
         clientLock.readLock().lock()

@@ -155,12 +155,12 @@ class HitSkillsHard {
             String userId = userIdFactory.userId
             Date date = userAndDateFactory.date
             Map defParams = [projectId: randomLookupKey.projId, skillId: randomLookupKey.skillId]
-
-            statsHelper.startEvent()
-            service.addSkill(defParams, userId, date)
             //at the moment, we don't need to do anything with the actual client that is created here
             //this will impact timing metrics, however each userId/projId pairing is only created once
             webSocketClientManager.get(userId, randomLookupKey.projId, service)
+
+            statsHelper.startEvent()
+            service.addSkill(defParams, userId, date)
             statsHelper.endEvent()
         }
     }
