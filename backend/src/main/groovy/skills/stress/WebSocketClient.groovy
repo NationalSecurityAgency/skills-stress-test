@@ -83,8 +83,8 @@ class WebSocketClient {
 
             @Override
             void afterConnected(StompSession session, StompHeaders connectedHeaders) {
-                session.subscribe("/${userId}/queue/${projId}-skill-updates", this)
-                log.trace("subscribed to /${userId}/queue/${projId}-skill-updates")
+                session.subscribe("/user/${userId}/queue/${projId}-skill-updates", this)
+                log.trace("subscribed to /user/${userId}/queue/${projId}-skill-updates")
             }
         }
 
