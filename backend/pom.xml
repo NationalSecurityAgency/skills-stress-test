@@ -211,8 +211,7 @@
                                 <licenseMerge>The Apache Software License, Version 2.0|Apache License 2.0</licenseMerge>
                                 <licenseMerge>The Apache Software License, Version 2.0|Apache License, version 2.0</licenseMerge>
                                 <licenseMerge>Eclipse Public License - Version 1.0|Eclipse Public License 1.0</licenseMerge>
-                                <licenseMerge>The 3-Clause BSD License|New BSD License</licenseMerge>
-                                <licenseMerge>The 3-Clause BSD License|BSD Licence 3</licenseMerge>
+                                <licenseMerge>The 3-Clause BSD License|New BSD License|BSD Licence 3|BSD License 3</licenseMerge>
                                 <licenseMerge>Eclipse Public License - Version 1.0|Eclipse Public License - v 1.0</licenseMerge>
                                 <licenseMerge>Eclipse Public License, Version 2.0|EPL 2.0</licenseMerge>
                             </licenseMerges>
