@@ -32,6 +32,9 @@ class ExplanationUtils {
         if (explanation.startsWith("This skill was already performed ") && explanation.contains("within the configured time period")) {
             return "This skill was already performed in its Time Window"
         }
+        if (explanation.startsWith("Not all dependent skills have been achieved.")){
+            return "Not all dependent skills have been achieved"
+        }
         return explanation
     }
 
@@ -51,7 +54,8 @@ class ExplanationUtils {
         return [
                 "This skill was already performed in its Time Window" : 0l,
                 "This skill reached its maximum points": 0l,
-                "Skill event was applied": 0l
+                "Not all dependent skills have been achieved": 0l,
+                "Skill event was applied": 0l,
         ]
     }
 }
