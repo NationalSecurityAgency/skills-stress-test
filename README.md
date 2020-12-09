@@ -21,6 +21,8 @@ Serves as a single location for SkillTree projects' CI status.
 
 [![Run integration tests using two way ssl](https://github.com/NationalSecurityAgency/skills-service/workflows/Run%20integration%20tests%20using%20two%20way%20ssl/badge.svg)](https://github.com/NationalSecurityAgency/skills-service/actions?query=workflow%3A%22Run+integration+tests+using+two+way+ssl%22)
 
+[![Publish Docker Image Snapshot](https://github.com/NationalSecurityAgency/skills-service/workflows/Publish%20Docker%20Image%20Snapshot/badge.svg)](https://github.com/NationalSecurityAgency/skills-service/actions?query=workflow%3A%22Publish+Docker+Image+Snapshot%22)
+
 ## skills-client
 
 [![CI Badge](https://github.com/NationalSecurityAgency/skills-client/workflows/Continuous%20Integration/badge.svg)](https://github.com/NationalSecurityAgency/skills-client/actions?query=workflow%3A%22Continuous+Integration%22)
