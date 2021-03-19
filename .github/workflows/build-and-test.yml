@@ -32,16 +32,16 @@ jobs:
 
     - uses: actions/setup-node@v2-beta
       with:
-        node-version: '12'
-
-    - name: Set up Maven
-      uses: stCarolas/setup-maven@v3
-      with:
-        maven-version: 3.6.3
+        node-version: '14'
 
     - uses: actions/setup-java@v1
       with:
         java-version: '11.X.X' # The JDK version to make available on the path.
+
+    - name: Print Versions
+      run: |
+        mvn --version
+        java -version
 
 #    - name: print settings.xml
 #      run: cat ~/.m2/settings.xml
