@@ -13,7 +13,7 @@
         <module>backend</module>
     </modules>
     <properties>
-        <node.version>v11.6.0</node.version>
+        <node.version>v14.15.0</node.version>
     </properties>
 
     <parent>
