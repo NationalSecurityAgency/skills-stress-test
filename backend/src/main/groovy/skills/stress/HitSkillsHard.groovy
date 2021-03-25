@@ -43,6 +43,7 @@ class HitSkillsHard {
     int numUsersPerApp = 100
     int numConcurrentThreads = 5
     int numMaxWebsocketClients = 25
+    long sleepMsBetweenRequests = 250
     boolean removeExistingTestProjects = false
     String serviceUrl = "http://localhost:8080"
     boolean pkiMode = false
@@ -191,6 +192,14 @@ class HitSkillsHard {
                 } catch (Throwable t){
                     log.error("Thread [${Thread.currentThread().name}] had failure", t)
                     numErrors.incrementAndGet()
+                }
+
+                if (sleepMsBetweenRequests > 0 ) {
+                    try {
+                        Thread.sleep(sleepMsBetweenRequests)
+                    } catch (InterruptedException ie) {
+                        log.error("Failed to sleep", ie)
+                    }
                 }
             }
         } catch (Exception e) {

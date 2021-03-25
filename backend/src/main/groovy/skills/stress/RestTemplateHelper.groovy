@@ -40,6 +40,7 @@ class RestTemplateHelper {
         SSLContext sslContext = builder.loadTrustMaterial(null, acceptAll).build()
         SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE)
 
+
         Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
                 .register("https", sslsf)
                 .register("http", new PlainConnectionSocketFactory())

@@ -68,6 +68,10 @@ limitations under the License.
             <b-form-input v-model="numConcurrentThreads" type="number"></b-form-input>
           </div>
           <div class="col-lg">
+            <span class="text-uppercase text-muted">Sleep (MS) between Requests</span>
+            <b-form-input v-model="sleepMsBetweenRequests" type="number"></b-form-input>
+          </div>
+          <div class="col-lg">
             <span class="text-uppercase text-muted">Remove Existing Test Projects</span>
             <b-form-checkbox v-model="removeExistingTestProjects" name="check-button" switch>
               <span v-if="removeExistingTestProjects">Existing projects will be deleted</span>
@@ -99,6 +103,7 @@ export default {
       hasDependenciesEveryNProjects: 5,
       numUsersPerApp: 100,
       numConcurrentThreads: 5,
+      sleepMsBetweenRequests: 500,
       removeExistingTestProjects: false,
     };
   },
@@ -113,6 +118,7 @@ export default {
         numUsersPerApp: this.numUsersPerApp,
         numConcurrentThreads: this.numConcurrentThreads,
         removeExistingTestProjects: this.removeExistingTestProjects,
+        sleepMsBetweenRequests: this.sleepMsBetweenRequests,
         serviceUrl: this.serviceUrl,
       });
     },
