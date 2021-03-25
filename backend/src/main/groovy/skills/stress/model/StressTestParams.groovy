@@ -27,6 +27,7 @@ class StressTestParams {
     int hasDependenciesEveryNProjects = 5
     int numUsersPerApp = 100
     int numConcurrentThreads = 5
+    long sleepMsBetweenRequests = 250
     boolean removeExistingTestProjects = false;
     String serviceUrl = "http://localhost:8080"
 }

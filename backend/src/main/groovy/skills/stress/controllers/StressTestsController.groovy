@@ -87,6 +87,7 @@ class StressTestsController {
                 badgesPerProject: params.badgesPerProject,
                 hasDependenciesEveryNProjects: params.hasDependenciesEveryNProjects,
                 numUsersPerApp: params.numUsersPerApp,
+                sleepMsBetweenRequests: params.sleepMsBetweenRequests,
                 numConcurrentThreads: params.numConcurrentThreads,
                 removeExistingTestProjects: params.removeExistingTestProjects,
                 serviceUrl: stressTestParams.serviceUrl,

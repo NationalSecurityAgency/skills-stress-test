@@ -132,9 +132,13 @@ class SkillsService {
 
     @Profile
     private def post(String url, Map params) {
-        HttpEntity entity = getHttpEntity(params)
-        ResponseEntity<String> responseEntity = restTemplate.exchange(url.toString(), HttpMethod.POST, entity, String.class, params)
-        return responseEntity.body
+        try {
+            HttpEntity entity = getHttpEntity(params)
+            ResponseEntity<String> responseEntity = restTemplate.exchange(url.toString(), HttpMethod.POST, entity, String.class, params)
+            return responseEntity.body
+        } catch (Throwable t) {
+            throw new RuntimeException("Failed for url = [$url], params = [$params]", t)
+        }
     }
 
     JsonSlurper jsonSlurper = new JsonSlurper()
