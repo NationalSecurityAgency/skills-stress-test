@@ -103,7 +103,7 @@ export default {
       hasDependenciesEveryNProjects: 5,
       numUsersPerApp: 100,
       numConcurrentThreads: 5,
-      sleepMsBetweenRequests: 250,
+      sleepMsBetweenRequests: 500,
       removeExistingTestProjects: false,
     };
   },
