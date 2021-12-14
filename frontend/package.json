@@ -5,7 +5,7 @@
   "description": "SkillTree Dashboard UI",
   "author": "SkillTree Team",
   "scripts": {
-    "licenseDepCheck": "license-checker --production --onlyAllow='MIT;Apache-2.0' --summary",
+    "licenseDepCheck": "license-checker --production --onlyAllow='MIT;Apache-2.0;BSD-2-Clause;BSD-3-Clause' --summary",
     "licenseHeaderCheck": "license-check-and-add check -f '../license-add/license-add-config.json'",
     "licenseHeaderAdd": "license-check-and-add add -f ../license-add/license-add-config.json",
     "licenseCheck": "npm run licenseHeaderCheck && npm run licenseDepCheck",
