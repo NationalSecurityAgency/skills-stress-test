@@ -18,6 +18,11 @@
         <commons.io>2.8.0</commons.io>
         <commons.text>1.9</commons.text>
         <gmavenplus.plugin.version>1.12.1</gmavenplus.plugin.version>
+
+        <groovy.version>3.0.7</groovy.version>
+        <groovy.eclipse.compiler.version>3.6.0-03</groovy.eclipse.compiler.version>
+        <groovy.eclipse.batch.version>3.0.7-01</groovy.eclipse.batch.version>
+
     </properties>
 
     <dependencies>
@@ -28,10 +33,12 @@
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
+            <version>${groovy.version}</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-json</artifactId>
+            <version>${groovy.version}</version>
         </dependency>
 
         <dependency>
@@ -90,6 +97,22 @@
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
             <version>${joda.time.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>dev.skilltreeplatform</groupId>
+            <artifactId>call-stack-profiler</artifactId>
+            <version>1.1.4</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-bom</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-slf4j-impl</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
