@@ -14,7 +14,7 @@
     </modules>
     <properties>
         <node.version>v14.18.1</node.version>
-        <log4j2.version>2.16.0</log4j2.version>
+        <log4j2.version>2.17.0</log4j2.version>
     </properties>
 
     <parent>
