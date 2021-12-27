@@ -27,6 +27,8 @@ Serves as a single location for SkillTree projects' CI status.
 
 [![Average Lighthouse Score](https://raw.githubusercontent.com/NationalSecurityAgency/skills-service/badges/master/average_accessibility_score.svg)](https://raw.githubusercontent.com/NationalSecurityAgency/skills-service/badges/master/average_accessibility_score.svg)
 
+[![Continuous Integration with Email Confirmation Enabled](https://github.com/NationalSecurityAgency/skills-service/actions/workflows/build-and-test-email-confirmation.yml/badge.svg)](https://github.com/NationalSecurityAgency/skills-service/actions/workflows/build-and-test-email-confirmation.yml)
+
 ## skills-client
 
 [![CI Badge](https://github.com/NationalSecurityAgency/skills-client/workflows/Continuous%20Integration/badge.svg)](https://github.com/NationalSecurityAgency/skills-client/actions?query=workflow%3A%22Continuous+Integration%22)
