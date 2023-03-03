@@ -33,7 +33,7 @@ import skills.stress.errors.ErrorTracker
 import skills.stress.model.StatusRes
 import skills.stress.model.StressTestParams
 
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
 
 @RestController
 @RequestMapping("/stress")

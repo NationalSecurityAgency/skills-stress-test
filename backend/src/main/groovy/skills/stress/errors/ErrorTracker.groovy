@@ -19,8 +19,8 @@ import groovy.util.logging.Slf4j
 import org.apache.commons.text.similarity.LevenshteinDistance
 import org.springframework.stereotype.Service
 
-import javax.annotation.PostConstruct
-import javax.annotation.PreDestroy
+import jakarta.annotation.PostConstruct
+import jakarta.annotation.PreDestroy
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.SynchronousQueue

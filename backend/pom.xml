@@ -17,11 +17,7 @@
         <joda.time.version>2.10.10</joda.time.version>
         <commons.io>2.8.0</commons.io>
         <commons.text>1.10.0</commons.text>
-        <gmavenplus.plugin.version>1.12.1</gmavenplus.plugin.version>
-
-        <groovy.version>3.0.7</groovy.version>
-        <groovy.eclipse.compiler.version>3.6.0-03</groovy.eclipse.compiler.version>
-        <groovy.eclipse.batch.version>3.0.7-01</groovy.eclipse.batch.version>
+        <gmavenplus.plugin.version>1.13.1</gmavenplus.plugin.version>
 
     </properties>
 
@@ -31,14 +27,12 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.groovy</groupId>
+            <groupId>org.apache.groovy</groupId>
             <artifactId>groovy</artifactId>
-            <version>${groovy.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.groovy</groupId>
+            <groupId>org.apache.groovy</groupId>
             <artifactId>groovy-json</artifactId>
-            <version>${groovy.version}</version>
         </dependency>
 
         <dependency>
@@ -83,8 +77,8 @@
             <version>${commons.text}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
         </dependency>
 
         <!-- for embedded CSP -->
