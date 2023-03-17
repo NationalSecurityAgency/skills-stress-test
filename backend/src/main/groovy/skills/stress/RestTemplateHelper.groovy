@@ -34,9 +34,7 @@ import javax.net.ssl.SSLContext
 class RestTemplateHelper {
 
     static ClientHttpRequestFactory getTrustAllRequestFactory() {
-        TrustStrategy acceptAll = { cert, authType -> true }
-        SSLContextBuilder builder = SSLContexts.custom()
-        SSLContext sslContext = builder.loadTrustMaterial(null, acceptAll).build()
+        SSLContext sslContext = SSLContexts.createSystemDefault()
         HostnameVerifier allowAllHosts = new NoopHostnameVerifier();
         SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(
                 sslContext,
