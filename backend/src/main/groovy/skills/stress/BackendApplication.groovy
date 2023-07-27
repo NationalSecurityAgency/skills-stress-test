@@ -35,6 +35,10 @@ class BackendApplication {
 				return true
 			}
 		});
+
+		// allows the secrets to be passed in via file instead of using command line or env variables
+		new SecretsUtil().updateSecrets();
+
 		SpringApplication.run(BackendApplication, args)
 	}
 
