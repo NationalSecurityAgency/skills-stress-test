@@ -11,19 +11,15 @@ Serves as a single location for SkillTree projects' CI status.
 
 ## skills-service
 
-[![CI Badge](https://github.com/NationalSecurityAgency/skills-service/workflows/Continuous%20Integration/badge.svg)](https://github.com/NationalSecurityAgency/skills-service/actions?query=workflow%3A%22Continuous+Integration%22)
+[![Continuous Integration](https://github.com/NationalSecurityAgency/skills-service/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/NationalSecurityAgency/skills-service/actions/workflows/build-and-test.yml)
 
-[![DB Test Badge](https://github.com/NationalSecurityAgency/skills-service/workflows/Test%20against%20PostgreSQL/badge.svg)](https://github.com/NationalSecurityAgency/skills-service/actions?query=workflow%3A%22Test+against+PostgreSQL%22)
+[![Nightly Service Tests](https://github.com/NationalSecurityAgency/skills-service/actions/workflows/build-and-test-night-service-tests.yml/badge.svg)](https://github.com/NationalSecurityAgency/skills-service/actions/workflows/build-and-test-night-service-tests.yml)
 
-[![Test Web Sockets over STOMP using RabbitMQ](https://github.com/NationalSecurityAgency/skills-service/workflows/Test%20Web%20Sockets%20over%20STOMP%20using%20RabbitMQ/badge.svg)](https://github.com/NationalSecurityAgency/skills-service/actions?query=workflow%3A%22Test+Web+Sockets+over+STOMP+using+RabbitMQ%22)
+[![Test Web Sockets over STOMP using RabbitMQ](https://github.com/NationalSecurityAgency/skills-service/actions/workflows/build-and-test-rabbitmq.yml/badge.svg)](https://github.com/NationalSecurityAgency/skills-service/actions/workflows/build-and-test-rabbitmq.yml)
 
-[![Run integration tests using two way ssl](https://github.com/NationalSecurityAgency/skills-service/workflows/Run%20integration%20tests%20using%20two%20way%20ssl/badge.svg)](https://github.com/NationalSecurityAgency/skills-service/actions?query=workflow%3A%22Run+integration+tests+using+two+way+ssl%22)
+[![Run integration tests using two way ssl](https://github.com/NationalSecurityAgency/skills-service/actions/workflows/build-and-test-ssl.yml/badge.svg)](https://github.com/NationalSecurityAgency/skills-service/actions/workflows/build-and-test-ssl.yml)
 
-[![Run integration tests using OAuth](https://github.com/NationalSecurityAgency/skills-service/workflows/Continuous%20Integration%20with%20OAuth/badge.svg)](https://github.com/NationalSecurityAgency/skills-service/actions/workflows/build-and-test-oauth.yml?query=workflow%3A%22Continuous+Integration+with+OAuth%22)
-
-[![Publish Docker Image Snapshot](https://github.com/NationalSecurityAgency/skills-service/workflows/Publish%20Docker%20Image%20Snapshot/badge.svg)](https://github.com/NationalSecurityAgency/skills-service/actions?query=workflow%3A%22Publish+Docker+Image+Snapshot%22)
-
-[![Average Lighthouse Score](https://raw.githubusercontent.com/NationalSecurityAgency/skills-service/badges/master/average_accessibility_score.svg)](https://raw.githubusercontent.com/NationalSecurityAgency/skills-service/badges/master/average_accessibility_score.svg)
+[![Continuous Integration with OAuth](https://github.com/NationalSecurityAgency/skills-service/actions/workflows/build-and-test-oauth.yml/badge.svg)](https://github.com/NationalSecurityAgency/skills-service/actions/workflows/build-and-test-oauth.yml)
 
 [![Continuous Integration with Email Confirmation Enabled](https://github.com/NationalSecurityAgency/skills-service/actions/workflows/build-and-test-email-confirmation.yml/badge.svg)](https://github.com/NationalSecurityAgency/skills-service/actions/workflows/build-and-test-email-confirmation.yml)
 
@@ -38,6 +34,7 @@ Serves as a single location for SkillTree projects' CI status.
 [![Skills-service Backward Compatibility](https://github.com/NationalSecurityAgency/skills-client/workflows/Skills-service%20Backward%20Compatibility/badge.svg)](https://github.com/NationalSecurityAgency/skills-client/actions?query=workflow%3A%22Skills-service+Backward+Compatibility%22)
 
 [![Client Libs Backward Compatibility](https://github.com/NationalSecurityAgency/skills-client/workflows/Client%20Libs%20Backward%20Compatibility/badge.svg)](https://github.com/NationalSecurityAgency/skills-client/actions?query=workflow%3A%22Client+Libs+Backward+Compatibility%22)
+
 
 ## skills-client-examples
 
