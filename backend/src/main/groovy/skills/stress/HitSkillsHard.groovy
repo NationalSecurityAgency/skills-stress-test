@@ -65,7 +65,7 @@ class HitSkillsHard {
         shouldRun.set(false)
 
         if (futures) {
-            // recommended to use following statement to ensure the execution of all tasks.
+            // recommended to use following statement to ensure the execution of all tasks
             log.info("Started All Threads")
             futures.each { it.get() }
 
