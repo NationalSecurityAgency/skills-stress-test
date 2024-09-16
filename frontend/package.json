@@ -16,7 +16,7 @@
   "dependencies": {
     "apexcharts": "3.32.0",
     "axios": "1.6.0",
-    "bootstrap": "4.6.1",
+    "bootstrap": "5.0.0",
     "bootstrap-vue": "2.21.2",
     "core-js": "3.19.3",
     "moment": "2.29.4",
