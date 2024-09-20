@@ -13,6 +13,18 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+<script setup>
+import NumberFilter from "../filters/NumberFilter.js";
+import { defineProps } from 'vue';
+
+defineProps(['prof', 'title']);
+
+const formatNum = (numVal) => {
+  return NumberFilter(numVal);
+};
+
+</script>
+
 <template>
     <div v-if="prof" class="mt-3">
         <h2 class="text-uppercase border-bottom text-muted">
@@ -21,11 +33,11 @@ limitations under the License.
         <div class="row mb-4">
             <div class="col">
                 <p class="text-uppercase text-muted count-label">Events</p>
-                <strong class="h5">{{ prof.totalEvents | number }}</strong>
+                <strong class="h5">{{ prof.totalEvents }}</strong>
             </div>
             <div class="col">
                 <p class="text-uppercase text-muted count-label">Exec Time (Seconds)</p>
-                <strong class="h5">{{ prof.totalExecTime | number }}</strong>
+                <strong class="h5">{{ prof.totalExecTime }}</strong>
             </div>
         </div>
 
@@ -34,39 +46,25 @@ limitations under the License.
                 <h5 class="text-uppercase">Overall</h5>
                 <div class="mb-2">Average Response Time: <span class="text-info">{{ prof.avgEventResponse }} ms</span>
                 </div>
-                <b-table striped hover :items="prof.groupedExecTimes">
-                    <template v-slot:cell(numberOfEvents)="numberOfEvents">
-                        {{ formatNum(numberOfEvents.value) }}
-                    </template>
-                </b-table>
+<!--                <b-table striped hover :items="prof.groupedExecTimes">-->
+<!--                    <template v-slot:cell(numberOfEvents)="numberOfEvents">-->
+<!--                        {{ formatNum(numberOfEvents.value) }}-->
+<!--                    </template>-->
+<!--                </b-table>-->
             </div>
             <div class="col-lg border rounded p-3">
                 <h5 class="text-uppercase">Last 1K</h5>
                 <div class="mb-2">Average Response Time: <span class="text-info">{{ prof.avgEventResponseLast1k }} ms</span>
                 </div>
-                <b-table striped hover :items="prof.groupedExecTimesLast1k">
-                    <template v-slot:cell(numberOfEvents)="numberOfEvents">
-                        {{ formatNum(numberOfEvents.value) }}
-                    </template>
-                </b-table>
+<!--                <b-table striped hover :items="prof.groupedExecTimesLast1k">-->
+<!--                    <template v-slot:cell(numberOfEvents)="numberOfEvents">-->
+<!--                        {{ formatNum(numberOfEvents.value) }}-->
+<!--                    </template>-->
+<!--                </b-table>-->
             </div>
         </div>
     </div>
 </template>
-
-<script>
-    import NumberFilter from "../filters/NumberFilter";
-
-    export default {
-        name: "ProfilerResult",
-        props: ['prof', 'title'],
-        methods: {
-            formatNum(numVal) {
-                return NumberFilter(numVal);
-            },
-        },
-    }
-</script>
 
 <style scoped>
 

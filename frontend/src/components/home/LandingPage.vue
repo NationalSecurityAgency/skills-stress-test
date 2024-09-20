@@ -13,6 +13,60 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+<script setup>
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import StressTestStatus from "@/components/StressTestStatus.vue";
+import StartStressTest from "@/components/StartStressTest.vue";
+import StressTestsService from "@/services/StressTestsService.js";
+
+const running = ref(false);
+const failedToStart = ref(false);
+const status = ref({});
+const timer = ref(undefined);
+
+onMounted(() => {loadStatus()})
+
+onBeforeUnmount( () => {
+  if (timer.value) {
+    clearInterval(timer.value);
+  }
+});
+
+const loadStatus = () => {
+  StressTestsService.getStatus().then((newStatus) => {
+    status.value = newStatus
+    if (newStatus) {
+      running.value = newStatus.running
+    }
+  });
+};
+
+const startTest = (config) => {
+  failedToStart.value = false;
+  StressTestsService.startTest(config).then(() => {
+    running.value = true;
+  }).catch(() => {
+    failedToStart.value = true;
+  });
+};
+
+const stopTest = () => {
+  StressTestsService.stopTest().then(() => {
+    running.value = false;
+  });
+};
+
+  // watch: {
+  //   running(val) {
+  //     if (val === true) {
+  //       this.timer = setInterval(this.loadStatus, 2000);
+  //     } else {
+  //       clearInterval(this.timer);
+  //     }
+  //   },
+  // },
+</script>
+
 <template>
   <div class="container">
     <start-stress-test @start-test="startTest" @stop-test="stopTest" :running="running"/>
@@ -20,72 +74,6 @@ limitations under the License.
     <stress-test-status class="mt-2" :status="status" :running="running"/>
   </div>
 </template>
-
-<script>
-import StressTestStatus from "@/components/StressTestStatus";
-import StartStressTest from "@/components/StartStressTest";
-import StressTestsService from "@/services/StressTestsService";
-
-export default {
-  name: 'LandingPage',
-  components: {
-    StartStressTest,
-    StressTestStatus,
-  },
-  data() {
-    return {
-      running: false,
-      failedToStart: false,
-      status: {},
-      timer: undefined,
-    };
-  },
-  mounted() {
-    this.loadStatus();
-  },
-  methods: {
-    loadStatus() {
-      StressTestsService.getStatus()
-          .then((status) => {
-            this.status = status
-            if (status) {
-              this.running = status.running
-            }
-          });
-    },
-    startTest(config) {
-      this.failedToStart = false;
-      StressTestsService.startTest(config)
-          .then(() => {
-            this.running = true;
-          })
-          .catch(() => {
-            this.failedToStart = true;
-          });
-    },
-    stopTest() {
-      StressTestsService.stopTest()
-          .then(() => {
-            this.running = false;
-          });
-    }
-  },
-  watch: {
-    running(val) {
-      if (val === true) {
-        this.timer = setInterval(this.loadStatus, 2000);
-      } else {
-        clearInterval(this.timer);
-      }
-    },
-  },
-  beforeDestroy() {
-    if (this.timer) {
-      clearInterval(this.timer);
-    }
-  }
-}
-</script>
 
 <style scoped>
 

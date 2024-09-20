@@ -28,6 +28,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+<script setup>
+import StressTestsMetrics from "@/components/StressTestsMetrics.vue";
+
+defineProps(['status', 'running']);
+</script>
+
+
 <template>
   <div v-if="status">
 
@@ -61,17 +68,6 @@ limitations under the License.
     </div>
   </div>
 </template>
-
-<script>
-
-import StressTestsMetrics from "@/components/StressTestsMetrics";
-
-export default {
-  name: "StressTestStatus",
-  components: {StressTestsMetrics},
-  props: ['status', 'running'],
-}
-</script>
 
 <style scoped>
 

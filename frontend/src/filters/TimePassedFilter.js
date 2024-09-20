@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Vue from 'vue';
 import moment from 'moment';
 
-const dateFormatter = value => moment(value).startOf().fromNow();
-Vue.filter('timePassed', dateFormatter);
-
+export default class DateFormatter {
+    static format(value) {
+        moment(value).startOf().fromNow();
+    }
+}
 
 // this allows to call this function from an js code; to learn more about that read about javascript modules
 // import DateFilter from 'src/DateFilter.js'
 //    DateFilter(dateStrVAlue)
-export default dateFormatter;

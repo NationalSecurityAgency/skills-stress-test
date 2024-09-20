@@ -13,36 +13,24 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-<template>
-  <div class="card">
-    <div class="card-header text-left">
-      <h5>{{ title }}</h5>
-    </div>
-    <div class="card-body">
-      <apexchart type="bar" height="400" :options="options" :series="series"></apexchart>
-    </div>
-  </div>
-</template>
+<script setup>
+import { ref } from 'vue';
+import numberFormatter from "@/filters/NumberFilter.js";
 
-<script>
-import numberFormatter from "@/filters/NumberFilter";
-export default {
-  name: "ResultExaplanationChart",
-  props: ['title', 'explanationCounts'],
-  watch: {
-    explanationCounts() {
-      this.series = [{
-        data: this.explanationCounts.series,
-      }];
-    },
-  },
-  data() {
-    return {
-      loading: true,
-      series: [{
-        data: this.explanationCounts.series,
-      }],
-      options: {
+const props = defineProps(['title', 'explanationCounts'])
+
+  // watch: {
+  //   explanationCounts() {
+  //     this.series = [{
+  //       data: this.explanationCounts.series,
+  //     }];
+  //   },
+  // },
+
+const series = ref([{
+        data: props.explanationCounts.series,
+      }])
+const options = {
         chart: {
           type: 'bar',
           height: 400
@@ -69,8 +57,8 @@ export default {
             fontFamily: 'Helvetica, Arial, sans-serif',
             fontWeight: 'bold',
           },
-          formatter: function (val, opt) {
-            return opt.w.globals.labels[opt.dataPointIndex] + ":  " + numberFormatter(val)
+          formatter: (val, opt) => {
+            return opt.w.globals.labels[opt.dataPointIndex] + ":  " + numberFormatter.format(val)
           },
           offsetX: 10,
           dropShadow: {
@@ -97,7 +85,7 @@ export default {
           colors: ['#fff']
         },
         xaxis: {
-          categories: this.explanationCounts.labels,
+          categories: props.explanationCounts.labels,
         },
         yaxis: {
           labels: {
@@ -117,11 +105,19 @@ export default {
             }
           }
         }
-      },
-    };
-  },
-}
+      }
 </script>
+
+<template>
+  <Card>
+    <template #title class="text-left">
+      <h5>{{ title }}</h5>
+    </template>
+    <template #content>
+      <apexchart type="bar" height="400" :options="options" :series="series"></apexchart>
+    </template>
+  </Card>
+</template>
 
 <style scoped>
 

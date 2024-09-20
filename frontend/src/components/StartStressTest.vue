@@ -13,121 +13,113 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+<script setup>
+  import { ref, defineProps, defineEmits } from 'vue';
+  defineProps(['running']);
+  const emit = defineEmits(['start-test', 'stop-test']);
+
+  const expanded = ref(null);
+  const serviceUrl = ref('http://localhost:8080')
+  const numProjects = ref(2)
+  const subjPerProject = ref(6)
+  const skillsPerSubject = ref(50)
+  const badgesPerProject = ref(10)
+  const hasDependenciesEveryNProjects = ref(5)
+  const numUsersPerApp = ref(100)
+  const numConcurrentThreads = ref(5)
+  const sleepMsBetweenRequests = ref(500)
+  const removeExistingTestProjects = ref(false)
+
+  const startTest = () => {
+    emit('start-test', {
+      numProjects: numProjects.value,
+      subjPerProject: subjPerProject.value,
+      skillsPerSubject: skillsPerSubject.value,
+      badgesPerProject: badgesPerProject.value,
+      hasDependenciesEveryNProjects: hasDependenciesEveryNProjects.value,
+      numUsersPerApp: numUsersPerApp.value,
+      numConcurrentThreads: numConcurrentThreads.value,
+      removeExistingTestProjects: removeExistingTestProjects.value,
+      sleepMsBetweenRequests: sleepMsBetweenRequests.value,
+      serviceUrl: serviceUrl.value,
+    });
+  };
+
+  const stopTest = () => {
+    emit('stop-test', false);
+  };
+</script>
+
 <template>
-  <div class="card mt-2">
-    <div class="card-header text-left">
+  <Card>
+    <template #title>
       <h4>
         <span class="text-uppercase text-primary">Stress Test Settings</span>
-        <b-button @click="expanded = !expanded" variant="outline-primary" class="float-right">
-          Settings
-          <span v-if="expanded"><b-icon icon="arrows-collapse" /></span>
-          <span v-else><b-icon icon="arrows-expand" /></span>
-        </b-button>
+        <ToggleButton v-model="expanded" offLabel="Show Settings" onLabel="Hide Settings">
+        </ToggleButton>
       </h4>
-    </div>
-    <div class="card-body">
-      <div class="row text-left">
-        <div class="col-lg">
+    </template>
+    <template #content>
+      <div class="flex text-left">
+        <div class="flex flex-1">
           <span class="text-uppercase text-muted">Service Url</span>
-          <b-form-input v-model="serviceUrl" type="string"></b-form-input>
-
+          <InputText v-model="serviceUrl"></InputText>
         </div>
       </div>
-      <b-collapse id="collapse-1" v-model="expanded" class="mt-2">
-        <div class="row text-left mt-3">
-          <div class="col-lg">
+      <div v-if="expanded">
+        <div class="flex text-left mt-3">
+          <div class="flex flex-1">
             <span class="text-uppercase text-muted"># Projs</span>
-            <b-form-input v-model="numProjects" type="number"></b-form-input>
+            <InputNumber v-model="numProjects"></InputNumber>
           </div>
-          <div class="col-lg">
+          <div class="flex flex-1">
             <span class="text-uppercase text-muted">Subj Per Proj</span>
-            <b-form-input v-model="subjPerProject" type="number"></b-form-input>
+            <InputNumber v-model="subjPerProject"></InputNumber>
           </div>
-          <div class="col-lg">
+          <div class="flex flex-1">
             <span class="text-uppercase text-muted">skills per Subj</span>
-            <b-form-input v-model="skillsPerSubject" type="number"></b-form-input>
+            <InputNumber v-model="skillsPerSubject"></InputNumber>
           </div>
-          <div class="col-lg">
+          <div class="flex flex-1">
             <span class="text-uppercase text-muted">badges per Proj</span>
-            <b-form-input v-model="badgesPerProject" type="number"></b-form-input>
+            <InputNumber v-model="badgesPerProject"></InputNumber>
           </div>
         </div>
-        <div class="row text-left mt-3">
-          <div class="col-lg">
+        <div class="flex text-left mt-3">
+          <div class="flex flex-1">
             <span class="text-uppercase text-muted">Dependency Every N Projects</span>
-            <b-form-input v-model="hasDependenciesEveryNProjects" type="number"></b-form-input>
+            <InputNumber v-model="hasDependenciesEveryNProjects"></InputNumber>
           </div>
-          <div class="col-lg">
+          <div class="flex flex-1">
             <span class="text-uppercase text-muted">Users Per Proj</span>
-            <b-form-input v-model="numUsersPerApp" type="number"></b-form-input>
+            <InputNumber v-model="numUsersPerApp"></InputNumber>
           </div>
         </div>
-        <div class="row text-left mt-3">
-          <div class="col-lg">
+        <div class="flex text-left mt-3">
+          <div class="flex flex-1">
             <span class="text-uppercase text-muted">Number of Concurrent Threads</span>
-            <b-form-input v-model="numConcurrentThreads" type="number"></b-form-input>
+            <InputNumber v-model="numConcurrentThreads"></InputNumber>
           </div>
-          <div class="col-lg">
+          <div class="flex flex-1">
             <span class="text-uppercase text-muted">Sleep (MS) between Requests</span>
-            <b-form-input v-model="sleepMsBetweenRequests" type="number"></b-form-input>
+            <InputNumber v-model="sleepMsBetweenRequests"></InputNumber>
           </div>
-          <div class="col-lg">
+          <div class="flex flex-1">
             <span class="text-uppercase text-muted">Remove Existing Test Projects</span>
-            <b-form-checkbox v-model="removeExistingTestProjects" name="check-button" switch>
+            <Checkbox v-model="removeExistingTestProjects" name="check-button" switch>
               <span v-if="removeExistingTestProjects">Existing projects will be deleted</span>
               <span v-else>Existing projects will be preserved</span>
-            </b-form-checkbox>
+            </Checkbox>
           </div>
         </div>
-      </b-collapse>
-      <div class="text-left mt-3 text-uppercase">
-        <b-button v-if="!running" @click="startTest" variant="outline-primary">Start Test</b-button>
-        <b-button v-else @click="stopTest" variant="outline-warning">Stop Test</b-button>
       </div>
-    </div>
-  </div>
+      <div class="text-left mt-3 text-uppercase">
+        <Button v-if="!running" @click="startTest" variant="outline-primary">Start Test</Button>
+        <Button v-else @click="stopTest" variant="outline-warning">Stop Test</Button>
+      </div>
+    </template>
+  </Card>
 </template>
-
-<script>
-export default {
-  name: "StartStressTest",
-  props: ['running'],
-  data() {
-    return {
-      expanded: false,
-      serviceUrl: 'http://localhost:8080',
-      numProjects: 2,
-      subjPerProject: 6,
-      skillsPerSubject: 50,
-      badgesPerProject: 10,
-      hasDependenciesEveryNProjects: 5,
-      numUsersPerApp: 100,
-      numConcurrentThreads: 5,
-      sleepMsBetweenRequests: 500,
-      removeExistingTestProjects: false,
-    };
-  },
-  methods: {
-    startTest() {
-      this.$emit('start-test', {
-        numProjects: this.numProjects,
-        subjPerProject: this.subjPerProject,
-        skillsPerSubject: this.skillsPerSubject,
-        badgesPerProject: this.badgesPerProject,
-        hasDependenciesEveryNProjects: this.hasDependenciesEveryNProjects,
-        numUsersPerApp: this.numUsersPerApp,
-        numConcurrentThreads: this.numConcurrentThreads,
-        removeExistingTestProjects: this.removeExistingTestProjects,
-        sleepMsBetweenRequests: this.sleepMsBetweenRequests,
-        serviceUrl: this.serviceUrl,
-      });
-    },
-    stopTest() {
-      this.$emit('stop-test', false);
-    }
-  },
-}
-</script>
 
 <style scoped>
 
