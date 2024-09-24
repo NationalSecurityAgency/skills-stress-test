@@ -34,19 +34,17 @@ import StressTestsMetrics from "@/components/StressTestsMetrics.vue";
 defineProps(['status', 'running']);
 </script>
 
-
 <template>
   <div v-if="status">
-
-    <div class="text-left text-uppercase text-info mt-5 border-bottom">
-      <div class="row">
-        <div class="col">
-          <h2 class="font-weight-bold">
+    <div class="text-left uppercase text-info mt-5 border-bottom">
+      <div class="flex">
+        <div class="flex-1">
+          <h2 class="font-bold">
             STRESS TEST RUN
           </h2>
         </div>
-        <div class="col-md text-center text-md-right">
-          <h5 class="text-muted">
+        <div class="flex-1 text-center text-md-right">
+          <h5 class="font-light">
             Errors: <router-link to="/errors"><span class="text-warning">{{ status.numErrors }}</span></router-link> <span class="d-none d-md-inline mx-2">|</span> Running: <span class="text-success">{{ running || false }}</span>
           </h5>
         </div>
@@ -62,7 +60,7 @@ defineProps(['status', 'running']);
                               :disable-res-charts="true"
                               :start-timestamp="status.startTimestamp" title="Client Display"/>
       </div>
-      <div v-if="!status.reportSkillsRes && !status.clientDisplayStats" class="text-muted">
+      <div v-if="!status.reportSkillsRes && !status.clientDisplayStats" class="font-light">
         No Runs Yet...
       </div>
     </div>

@@ -14,22 +14,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import dateFormatter from "@/filters/DateFilter.js";
 
 const props = defineProps(['timeSeries']);
 
-const loading = ref(true);
 const numItems = ref(!props.timeSeries ? 0 : props.timeSeries.length);
 const options = {
   chart: {
     type: 'line',
-        stacked: false,
-        height: 350,
-        zoom: {
+    stacked: false,
+    height: 350,
+    zoom: {
       type: 'x',
-          enabled: true,
-          autoScaleYaxis: true
+      enabled: true,
+      autoScaleYaxis: true
     },
     toolbar: {
       autoSelected: 'zoom'
@@ -40,27 +39,27 @@ const options = {
   },
   stroke: {
     width: 7,
-        curve: 'smooth'
+    curve: 'smooth'
   },
   markers: {
     size: 6,
-        colors: ["#FFA41B"],
-        strokeColors: "#fff",
-        strokeWidth: 2,
-        hover: {
+    colors: ["#FFA41B"],
+    strokeColors: "#fff",
+    strokeWidth: 2,
+    hover: {
       size: 7,
     }
   },
   fill: {
     type: 'gradient',
-        gradient: {
+    gradient: {
       shade: 'dark',
-          gradientToColors: ['#FDD835'],
-          shadeIntensity: 1,
-          type: 'horizontal',
-          opacityFrom: 1,
-          opacityTo: 1,
-          stops: [0, 100, 100, 100]
+      gradientToColors: ['#FDD835'],
+      shadeIntensity: 1,
+      type: 'horizontal',
+      opacityFrom: 1,
+      opacityTo: 1,
+      stops: [0, 100, 100, 100]
     },
   },
   yaxis: {
@@ -70,7 +69,7 @@ const options = {
   },
   xaxis: {
     type: 'datetime',
-        labels: {
+    labels: {
       formatter: (value, timestamp) => {
         return dateFormatter.format(timestamp);
       }
@@ -83,15 +82,13 @@ const series = ref([{
   data: props.timeSeries,
 }]);
 
+watch(() => props.timeSeries, () => {
+  if(props.timeSeries.length > numItems.value) {
+    updateSeriesLine()
+    numItems.value = props.timeSeries.length;
+  }
+})
 
-  // watch: {
-  //   timeSeries() {
-  //     if (this.timeSeries.length > this.numItems) {
-  //       this.updateSeriesLine();
-  //       this.numItems = this.timeSeries.length;
-  //     }
-  //   },
-  // },
 const avgLatencyChart = ref();
 
 const updateSeriesLine = () => {
@@ -108,9 +105,9 @@ const updateSeriesLine = () => {
     </template>
     <template #content>
       <div v-if="!timeSeries || (timeSeries && timeSeries.length == 0)" class="msg-overlay row justify-content-md-center">
-        <div class="col-7">
-          <div class="alert alert-info">Not enough events processed</div>
-        </div>
+<!--        <div class="col-7">-->
+<!--          <div class="alert alert-info">Not enough events processed</div>-->
+<!--        </div>-->
       </div>
       <apexchart id="avgLatencyChart" ref="avgLatencyChart" height="350" type="line"
                  :options="options" :series="series">

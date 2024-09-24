@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import numberFormatter from '@/filters/NumberFilter.js';
 
 const props = defineProps(['title', 'groupedExecTimes'])
@@ -87,12 +87,9 @@ const updateSeries = () => {
   }];
 }
 
-  // watch: {
-  //   groupedExecTimes() {
-  //     this.updateSeries();
-  //   },
-  // },
-
+watch( () => props.groupedExecTimes, () => {
+  updateSeries();
+})
 </script>
 
 <template>

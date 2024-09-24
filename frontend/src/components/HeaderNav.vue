@@ -18,20 +18,12 @@ limitations under the License.
 </script>
 
 <template>
-    <div>
-      header
-<!--        <b-navbar toggleable="lg" type="dark" variant="info">-->
-<!--          <b-navbar-brand>-->
-<!--            <router-link to="/" class="text-white"><b-icon icon="hammer" class="mr-1" />SkillTree Stress Tests</router-link>-->
-<!--          </b-navbar-brand>-->
-<!--          <b-collapse id="nav-collapse" is-nav>-->
-<!--            <b-navbar-nav>-->
-<!--              <b-nav-item>-->
-<!--                <router-link to="/errors" class="text-white">Errors</router-link>-->
-<!--              </b-nav-item>-->
-<!--            </b-navbar-nav>-->
-<!--          </b-collapse>-->
-<!--        </b-navbar>-->
+    <div class="flex gap-2 bg-green-200">
+      <router-link to="/" class="text-white">
+        <i class="pi pi-hammer" style="font-size: 1rem"></i>
+        SkillTree Stress Tests
+      </router-link>
+      <router-link to="/errors" class="text-white">Errors</router-link>
     </div>
 </template>
 

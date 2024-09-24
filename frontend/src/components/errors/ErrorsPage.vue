@@ -43,8 +43,8 @@ const collapseFlip = (error) => {
 <template>
   <div class="text-left">
     <h2 class="pb-3 mb-5 border-bottom">
-<!--      <b-icon icon="emoji-frown" class="text-muted"/>-->
-      <span class="text-uppercase mx-1">Errors</span> <span class="text-muted">(last 20)</span>
+<!--      <b-icon icon="emoji-frown" class="font-light"/>-->
+      <span class="uppercase mx-1">Errors</span> <span class="font-light">(last 20)</span>
       <Button @click="loadErrors" class="float-right mb-3" variant="outline-primary">
         arrow-repeat
 <!--        <b-icon icon="arrow-repeat"/>-->
@@ -52,7 +52,7 @@ const collapseFlip = (error) => {
     </h2>
     <div v-if="loading" class="text-center">
 <!--      <b-spinner variant="info" type="grow" label="Spinning" style="width: 3rem; height: 3rem;"></b-spinner>-->
-      <div class="text-uppercase text-info mt-2">
+      <div class="uppercase text-info mt-2">
         Loading...
       </div>
     </div>
@@ -74,9 +74,9 @@ const collapseFlip = (error) => {
 <!--              <b-badge variant="light">{{ error.numOccur }}</b-badge>-->
 <!--            </b-badge>-->
           </h5>
-          <h6><span class="text-muted">Last Seen:</span>
+          <h6><span class="font-light">Last Seen:</span>
             <span class="ml-1">{{ error.lastSeen }}</span> <span
-                class="text-muted ml-1">({{ error.lastSeen }})</span>
+                class="font-light ml-1">({{ error.lastSeen }})</span>
             <a href="#" class="float-right" @click="collapseFlip(error)">View Error History
 <!--              <b-icon icon="arrow-down-square-fill"/>-->
             </a>
@@ -87,9 +87,9 @@ const collapseFlip = (error) => {
         </div>
         <div v-if="!error.collapsed" class="col-12">
           <div class="ml-5 border rounded p-3">
-            <h5 class="mb-3 border-bottom"><span>History:</span> <span class="text-muted ml-1">(last 20)</span></h5>
+            <h5 class="mb-3 border-bottom"><span>History:</span> <span class="font-light ml-1">(last 20)</span></h5>
             <div v-for="historyError in error.latestErrors" :key="historyError.id" class="border-bottom mb-3">
-              <h6><span class="text-muted">Date:</span>
+              <h6><span class="font-light">Date:</span>
                 <span class="ml-1">{{ error.lastSeen }}</span>
               </h6>
               <pre class="bg-light p-3">{{ formatJson(historyError.serverBody) }}</pre>

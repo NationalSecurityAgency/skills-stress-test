@@ -29,12 +29,18 @@ import Checkbox from 'primevue/checkbox';
 import Card from 'primevue/card';
 import ToggleButton from 'primevue/togglebutton';
 
+import 'primeflex/primeflex.css';
+import 'primeicons/primeicons.css';
+
 const app = createApp(App);
 app.use(router);
 app.use(VueApexCharts);
 app.use(PrimeVue, {
     theme: {
-        preset: Aura
+        preset: Aura,
+        // options: {
+        //     darkModeSelector: '.fake-selector'
+        // }
     }
 });
 app.component('Button', Button);

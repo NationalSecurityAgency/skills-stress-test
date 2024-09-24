@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import StressTestStatus from "@/components/StressTestStatus.vue";
 import StartStressTest from "@/components/StartStressTest.vue";
 import StressTestsService from "@/services/StressTestsService.js";
@@ -56,15 +56,13 @@ const stopTest = () => {
   });
 };
 
-  // watch: {
-  //   running(val) {
-  //     if (val === true) {
-  //       this.timer = setInterval(this.loadStatus, 2000);
-  //     } else {
-  //       clearInterval(this.timer);
-  //     }
-  //   },
-  // },
+watch(running, (value) => {
+  if (value === true ) {
+    timer.value = setInterval(loadStatus, 2000);
+  } else {
+    clearInterval(timer.value);
+  }
+})
 </script>
 
 <template>
