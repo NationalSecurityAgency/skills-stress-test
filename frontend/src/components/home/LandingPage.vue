@@ -18,10 +18,11 @@ import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import StressTestStatus from "@/components/StressTestStatus.vue";
 import StartStressTest from "@/components/StartStressTest.vue";
 import StressTestsService from "@/services/StressTestsService.js";
+import Message from 'primevue/message';
 
 const running = ref(false);
 const failedToStart = ref(false);
-const status = ref({});
+const status = ref(null);
 const timer = ref(undefined);
 
 onMounted(() => {loadStatus()})
@@ -68,7 +69,9 @@ watch(running, (value) => {
 <template>
   <div class="container">
     <start-stress-test @start-test="startTest" @stop-test="stopTest" :running="running"/>
-    <div v-if="failedToStart" class="alert alert-danger mt-2">Failed to start! See Logs!</div>
+    <Message v-if="failedToStart" severity="error" :closable="true">
+      Failed to start! See Logs!
+    </Message>
     <stress-test-status class="mt-2" :status="status" :running="running"/>
   </div>
 </template>

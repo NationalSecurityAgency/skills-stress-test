@@ -36,17 +36,13 @@ defineProps(['status', 'running']);
 
 <template>
   <div v-if="status">
-    <div class="text-left uppercase text-info mt-5 border-bottom">
+    <div class="text-left uppercase mt-5 border-bottom-1 text-3xl text-surface pb-2">
       <div class="flex">
-        <div class="flex-1">
-          <h2 class="font-bold">
+        <div class="flex-1 font-bold">
             STRESS TEST RUN
-          </h2>
         </div>
-        <div class="flex-1 text-center text-md-right">
-          <h5 class="font-light">
-            Errors: <router-link to="/errors"><span class="text-warning">{{ status.numErrors }}</span></router-link> <span class="d-none d-md-inline mx-2">|</span> Running: <span class="text-success">{{ running || false }}</span>
-          </h5>
+        <div>
+          Errors: <router-link to="/errors"><span class="text-warning">{{ status.numErrors }}</span></router-link> <span class="d-none d-md-inline mx-2">|</span> Running: <span class="text-success">{{ running || false }}</span>
         </div>
       </div>
     </div>

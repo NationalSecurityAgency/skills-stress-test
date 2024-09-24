@@ -18,15 +18,17 @@ limitations under the License.
 </script>
 
 <template>
-    <div class="flex gap-2 bg-green-200">
-      <router-link to="/" class="text-white">
+    <div class="flex gap-4 header p-3">
+      <router-link to="/" class="text-white text-2xl">
         <i class="pi pi-hammer" style="font-size: 1rem"></i>
         SkillTree Stress Tests
       </router-link>
-      <router-link to="/errors" class="text-white">Errors</router-link>
+      <router-link to="/errors" class="text-white text-xl">Errors</router-link>
     </div>
 </template>
 
 <style scoped>
-
+.header {
+  background-color: #17a2b8 !important
+}
 </style>

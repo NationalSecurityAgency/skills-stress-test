@@ -17,7 +17,7 @@ import moment from 'moment';
 
 export default class DateFormatter {
     static format(value) {
-        moment(value).startOf().fromNow();
+        return moment(value).startOf('hour').fromNow();
     }
 }
 

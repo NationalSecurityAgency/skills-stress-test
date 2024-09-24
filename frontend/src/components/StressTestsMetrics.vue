@@ -14,8 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 <script setup>
-import { defineProps } from 'vue';
 import NumberFilter from "@/filters/NumberFilter.js";
+import DateFormatter from '@/filters/DateFilter.js';
 import ChartAvgLatencyTimechart from "@/components/charts/ChartAvgLatencyTimechart.vue";
 import GroupByExecTimeChart from "@/components/charts/GroupByExecTimeChart.vue";
 import SingleStatCard from "@/components/metrics/SingleStatCard.vue";
@@ -26,22 +26,22 @@ defineProps(['reportSkillsRes', 'startTimestamp', 'title', 'disableResCharts']);
 const formatNum = (numVal) => {
   return NumberFilter.format(numVal);
 };
+
+const formatDate = (dateVal) => {
+  return DateFormatter.format(dateVal);
+}
 </script>
 
 <template>
-  <div v-if="reportSkillsRes">
-    <h3 class="text-center text-md-left border-bottom text-info font-bold uppercase">
-      <div class="flex">
-        <div class="flex-1">
+  <div v-if="reportSkillsRes" class="mt-8">
+    <div class="flex border-bottom-1 text-surface uppercase">
+        <div class="flex-1 font-bold text-3xl">
           {{ title }}
         </div>
-        <div class="flex-1 text-center text-md-right">
-          <h5 class="font-light uppercase text-md-right">
-            Started: <span class="text-dark">{{ startTimestamp }}</span>
-          </h5>
+        <div class="text-xl">
+          Started: <span>{{ formatDate(startTimestamp) }}</span>
         </div>
-      </div>
-    </h3>
+    </div>
 
     <div class="flex gap-2 mt-4 mb-4">
       <div class="flex-1">
@@ -59,9 +59,11 @@ const formatNum = (numVal) => {
       <ChartAvgLatencyTimechart :time-series="reportSkillsRes.historyOfAvgLatencyPer1k"/>
     </div>
 
-    <div class="flex flex-wrap gap-2 mt-3 w-full">
+    <div class="flex gap-2 mt-3">
       <GroupByExecTimeChart title="Overall Latency Breakdown"  :grouped-exec-times="reportSkillsRes.groupedExecTimes" class="flex-1"/>
       <ResultExaplanationChart v-if="!disableResCharts" title="Overall Result Explanations" :explanation-counts="reportSkillsRes.explanationCounts" class="flex-1"/>
+    </div>
+    <div class="flex gap-2 mt-3">
       <GroupByExecTimeChart title="Last 1k Latency Breakdown" :grouped-exec-times="reportSkillsRes.groupedExecTimesLast1k" class="flex-1"/>
       <ResultExaplanationChart v-if="!disableResCharts" title="Last 1k Result Explanations" :explanation-counts="reportSkillsRes.explanationCountsLast1k" class="flex-1"/>
     </div>

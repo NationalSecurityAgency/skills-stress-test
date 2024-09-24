@@ -28,6 +28,7 @@ import InputText from 'primevue/inputtext';
 import Checkbox from 'primevue/checkbox';
 import Card from 'primevue/card';
 import ToggleButton from 'primevue/togglebutton';
+import ToggleSwitch from 'primevue/toggleswitch';
 
 import 'primeflex/primeflex.css';
 import 'primeicons/primeicons.css';
@@ -38,9 +39,9 @@ app.use(VueApexCharts);
 app.use(PrimeVue, {
     theme: {
         preset: Aura,
-        // options: {
-        //     darkModeSelector: '.fake-selector'
-        // }
+        options: {
+            darkModeSelector: '.fake-selector'
+        }
     }
 });
 app.component('Button', Button);
@@ -49,6 +50,7 @@ app.component('InputText', InputText);
 app.component('Checkbox', Checkbox);
 app.component('Card', Card);
 app.component('ToggleButton', ToggleButton);
+app.component('ToggleSwitch', ToggleSwitch);
 
 app.mount('#app')
 

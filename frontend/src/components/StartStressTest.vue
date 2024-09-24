@@ -53,59 +53,61 @@ limitations under the License.
 <template>
   <Card>
     <template #title>
-      <h4>
-        <span class="uppercase text-primary">Stress Test Settings</span>
-        <ToggleButton v-model="expanded" offLabel="Show Settings" onLabel="Hide Settings">
+      <div class="border-bottom-1 p-3 surface-border surface-100 flex gap-4">
+        <span class="uppercase text-primary flex-1 text-left">Stress Test Settings</span>
+        <ToggleButton v-model="expanded" offLabel="Show Settings" onLabel="Hide Settings" class="">
         </ToggleButton>
-      </h4>
+      </div>
     </template>
     <template #content>
       <div class="flex">
-        <div class="flex flex-auto gap-4">
+        <div class="flex flex-column gap-2 w-full">
           <label class="uppercase" for="serviceUrl">Service Url</label>
           <InputText v-model="serviceUrl" id="serviceUrl"></InputText>
         </div>
       </div>
-      <div v-if="expanded" class="flex flex-column">
-        <div class="flex flex-1 gap-2 mt-2">
+      <div v-if="expanded" class="flex flex-wrap gap-4 mt-4">
+        <div class="flex flex-column gap-2">
           <label class="uppercase block" for="numProjects"># Projs</label>
           <InputNumber v-model="numProjects" inputId="numProjects"></InputNumber>
         </div>
-        <div class="flex flex-1 gap-2 mt-2">
+        <div class="flex flex-column gap-2">
           <label class="uppercase" for="subjPerProject">Subj Per Proj</label>
           <InputNumber v-model="subjPerProject" inputId="subjPerProject"></InputNumber>
         </div>
-        <div class="flex flex-1 gap-2 mt-2">
+        <div class="flex flex-column gap-2">
           <label class="uppercase" for="skillsPerSubject">skills per Subj</label>
           <InputNumber v-model="skillsPerSubject" inputId="skillsPerSubject"></InputNumber>
         </div>
-        <div class="flex flex-1 gap-2 mt-2">
+        <div class="flex flex-column gap-2">
           <label class="uppercase" for="badgesPerProject">badges per Proj</label>
           <InputNumber v-model="badgesPerProject" inputId="badgesPerProject"></InputNumber>
         </div>
-        <div class="flex flex-1 gap-2 mt-2">
+        <div class="flex flex-column gap-2">
           <label class="uppercase" for="hasDependenciesEveryNProjects">Dependency Every N Projects</label>
           <InputNumber v-model="hasDependenciesEveryNProjects" inputId="hasDependenciesEveryNProjects"></InputNumber>
         </div>
-        <div class="flex flex-1 gap-2 mt-2">
+        <div class="flex flex-column gap-2">
           <label class="uppercase" for="numUsersPerApp">Users Per Proj</label>
           <InputNumber v-model="numUsersPerApp" inputId="numUsersPerApp"></InputNumber>
         </div>
 
-        <div class="flex flex-1 gap-2 mt-2">
+        <div class="flex flex-column gap-2">
           <label class="uppercase" for="numConcurrentThreads">Number of Concurrent Threads</label>
           <InputNumber v-model="numConcurrentThreads" inputId="numConcurrentThreads"></InputNumber>
         </div>
-        <div class="flex flex-1 gap-2 mt-2">
+        <div class="flex flex-column gap-2">
           <label class="uppercase" for="sleepMsBetweenRequests">Sleep (MS) between Requests</label>
           <InputNumber v-model="sleepMsBetweenRequests" inputId="sleepMsBetweenRequests"></InputNumber>
         </div>
-        <div class="flex flex-1 gap-2 mt-2">
+        <div class="flex flex-column gap-2">
           <label class="uppercase" for="check-button">Remove Existing Test Projects</label>
-          <Checkbox v-model="removeExistingTestProjects" name="check-button" switch>
-            <span v-if="removeExistingTestProjects">Existing projects will be deleted</span>
-            <span v-else>Existing projects will be preserved</span>
-          </Checkbox>
+          <div>
+            <ToggleSwitch v-model="removeExistingTestProjects" name="check-button">
+            </ToggleSwitch>
+            <span v-if="removeExistingTestProjects" class="ml-2">Existing projects will be deleted</span>
+            <span v-else class="ml-2">Existing projects will be preserved</span>
+          </div>
         </div>
       </div>
       <div class="text-left mt-3 uppercase">

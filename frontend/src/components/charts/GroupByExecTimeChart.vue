@@ -95,7 +95,9 @@ watch( () => props.groupedExecTimes, () => {
 <template>
   <Card>
     <template #title class="text-left">
-      <h5>{{ title }}</h5>
+      <div class="border-bottom-1 p-3 surface-border surface-100 flex gap-4">
+        <span class="uppercase text-primary flex-1 text-left">{{ title }}</span>
+      </div>
     </template>
     <template #content>
       <apexchart type="bar" height="400" :options="options" :series="series"></apexchart>

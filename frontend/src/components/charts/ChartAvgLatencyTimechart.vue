@@ -16,6 +16,7 @@ limitations under the License.
 <script setup>
 import { ref, watch } from 'vue';
 import dateFormatter from "@/filters/DateFilter.js";
+import Message from 'primevue/message';
 
 const props = defineProps(['timeSeries']);
 
@@ -101,28 +102,23 @@ const updateSeriesLine = () => {
 <template>
   <Card>
     <template #title class="text-left">
-      <h5>Average Latency Per 1k Records</h5>
+      <div class="border-bottom-1 p-3 surface-border surface-100 flex gap-4">
+        <span class="uppercase text-primary flex-1 text-left">Average Latency Per 1k Records</span>
+      </div>
     </template>
     <template #content>
-      <div v-if="!timeSeries || (timeSeries && timeSeries.length == 0)" class="msg-overlay row justify-content-md-center">
-<!--        <div class="col-7">-->
-<!--          <div class="alert alert-info">Not enough events processed</div>-->
-<!--        </div>-->
+      <div>
+        <apexchart id="avgLatencyChart" ref="avgLatencyChart" height="350" type="line" :options="options" :series="series">
+        </apexchart>
+        <div v-if="!timeSeries || (timeSeries && timeSeries.length == 0)" class="flex absolute left-0 right-0 justify-content-center"
+             style="z-index: 1000 !important; margin-top: -220px" role="alert">
+            <Message>Not enough events processed</Message>
+        </div>
       </div>
-      <apexchart id="avgLatencyChart" ref="avgLatencyChart" height="350" type="line"
-                 :options="options" :series="series">
-      </apexchart>
+
     </template>
   </Card>
 </template>
 
 <style scoped>
-.msg-overlay {
-  position: absolute;
-  z-index: 1000;
-  text-align: center;
-  width: 100%;
-  top: 30%;
-  left: 2rem;
-}
 </style>
