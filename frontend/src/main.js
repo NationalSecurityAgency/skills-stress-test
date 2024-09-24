@@ -16,9 +16,6 @@
 import { createApp } from 'vue';
 import App from './App.vue'
 import VueApexCharts from 'vue3-apexcharts';
-// import './filters/NumberFilter';
-// import './filters/DateFilter';
-// import './filters/TimePassedFilter';
 import router from './router';
 import PrimeVue from 'primevue/config';
 import Aura from '@primevue/themes/aura';

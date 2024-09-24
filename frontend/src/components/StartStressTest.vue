@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 <script setup>
-  import { ref, defineProps, defineEmits } from 'vue';
+  import { ref } from 'vue';
   defineProps(['running']);
   const emit = defineEmits(['start-test', 'stop-test']);
 
