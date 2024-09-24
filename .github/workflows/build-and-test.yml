@@ -80,4 +80,5 @@ jobs:
       with:
         name: CI result artifacts
         path: |
-          ./target/*.jar
+          ./backend/target/*.jar
+          ./frontend/target/*.jar
