@@ -13,25 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Vue from 'vue';
-import Router from 'vue-router';
-import LandingPage from '@/components/home/LandingPage';
-import ErrorsPage from '@/components/errors/ErrorsPage';
+import { createRouter, createWebHistory } from 'vue-router';
+import LandingPage from '@/components/home/LandingPage.vue';
+import ErrorsPage from '@/components/errors/ErrorsPage.vue';
 
-Vue.use(Router);
+const routes = [
+  {
+    path: '/',
+    component: LandingPage,
+  },
+  {
+    path: '/errors',
+    component: ErrorsPage,
+  }
+];
 
-const router = new Router({
-  mode: 'history',
-  routes: [
-    {
-      path: '/',
-      component: LandingPage,
-    },
-    {
-      path: '/errors',
-      component: ErrorsPage,
-    }
-  ],
-});
+const router = createRouter({history: createWebHistory(import.meta.env.BASE_URL), routes})
 
 export default router;

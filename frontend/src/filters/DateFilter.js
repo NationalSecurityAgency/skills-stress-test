@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Vue from 'vue';
 import moment from 'moment';
 
-const dateFormatter = value => moment(value).format('YYYY-MM-DD HH:mm');
-Vue.filter('date', dateFormatter);
-
+export default class DateFormatter {
+    static format(value) {
+        return moment(value).format('YYYY-MM-DD HH:mm');
+    }
+}
 
 // this allows to call this function from an js code; to learn more about that read about javascript modules
 // import DateFilter from 'src/DateFilter.js'
 //    DateFilter(dateStrVAlue)
-export default dateFormatter;

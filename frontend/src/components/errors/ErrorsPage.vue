@@ -13,58 +13,88 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+<script setup>
+import { ref, onMounted } from 'vue';
+import StressTestsService from "@/services/StressTestsService.js";
+import Message from 'primevue/message';
+import Badge from 'primevue/badge';
+import DateFormatter from '@/filters/DateFilter.js';
+import TimePassedFilter from '@/filters/TimePassedFilter.js';
+
+const loading = ref(true);
+const errors = ref([]);
+
+onMounted(() => {
+  loadErrors();
+})
+
+const loadErrors = () => {
+  loading.value = true;
+  StressTestsService.getErrors().then((newErrors) => {
+    errors.value = newErrors.map((er) => Object.assign({collapsed: true}, er))
+    loading.value = false;
+  });
+};
+const formatJson = (stringJson) => {
+  return JSON.stringify(JSON.parse(stringJson), null, 2)
+};
+const collapseFlip = (error) => {
+  error.collapsed = !error.collapsed;
+  errors.value = errors.value.map((er) => er);
+}
+</script>
+
 <template>
   <div class="text-left">
-    <h2 class="pb-3 mb-5 border-bottom">
-      <b-icon icon="emoji-frown" class="text-muted"/>
-      <span class="text-uppercase mx-1">Errors</span> <span class="text-muted">(last 20)</span>
-      <b-button @click="loadErrors" class="float-right mb-3" variant="outline-primary">
-        <b-icon icon="arrow-repeat"/>
-      </b-button>
+    <h2 class="pb-3 mb-5 border-bottom-1">
+      <i class="pi pi-exclamation-circle"></i>
+      <span class="uppercase mx-1">Errors</span> <span class="font-light">(last 20)</span>
+      <Button @click="loadErrors" class="float-right mb-3" variant="outline-primary">
+        <i class="pi pi-refresh"></i>
+      </Button>
     </h2>
     <div v-if="loading" class="text-center">
-      <b-spinner variant="info" type="grow" label="Spinning" style="width: 3rem; height: 3rem;"></b-spinner>
-      <div class="text-uppercase text-info mt-2">
+<!--      <b-spinner variant="info" type="grow" label="Spinning" style="width: 3rem; height: 3rem;"></b-spinner>-->
+      <div class="uppercase mt-2">
         Loading...
       </div>
     </div>
-    <div v-if="!errors || errors.length === 0" class="justify-content-md-center row">
-      <div class="col-12 text-center">
+    <div v-if="!errors || errors.length === 0" class="flex justify-content-md-center row">
+      <div class="flex-1 text-center">
         <h4>
-          <b-alert variant="success" show>
-            <b-icon icon="trophy"/>
+          <Message severity="success">
+            <i class="pi pi-trophy"></i>
             Congrats!! There are no errors!
-          </b-alert>
+          </Message>
         </h4>
       </div>
     </div>
     <div v-if="!loading">
-      <div v-for="error in errors" :key="error.id" class="row mt-3 border-bottom">
-        <div class="col-12">
-          <h5>
-            <b-badge class="p-2 border border-dark" variant="info">{{ error.httpStatus }}
-              <b-badge variant="light">{{ error.numOccur }}</b-badge>
-            </b-badge>
-          </h5>
-          <h6><span class="text-muted">Last Seen:</span>
-            <span class="ml-1">{{ error.lastSeen | date }}</span> <span
-                class="text-muted ml-1">({{ error.lastSeen | timePassed }})</span>
-            <a href="#" class="float-right" @click="collapseFlip(error)">View Error History
-              <b-icon icon="arrow-down-square-fill"/>
+      <div v-for="error in errors" :key="error.id" class="mt-3 border-bottom-1">
+        <div>
+          <div>
+            <Badge size="xlarge">{{ error.httpStatus}} <Badge severity="danger" class="ml-4">{{ error.numOccur }}</Badge></Badge>
+          </div>
+          <div class="flex gap-2 mt-2">
+            <span class="flex">Last Seen:</span>
+            <span class="flex">{{ DateFormatter.format(error.lastSeen) }}</span> <span class="font-light ml-1">({{ TimePassedFilter.format(error.lastSeen) }})</span>
+            <a href="#" class="" @click="collapseFlip(error)">
+              View Error History <i class="pi pi-arrow-down"></i>
             </a>
-          </h6>
+          </div>
         </div>
-        <div class="col-12">
-          <pre class="bg-light p-3">{{ formatJson(error.serverBody) }}</pre>
+        <div class="flex-1">
+          <pre class="bg-light p-3">{{ error.serverBody }}</pre>
         </div>
-        <div v-if="!error.collapsed" class="col-12">
-          <div class="ml-5 border rounded p-3">
-            <h5 class="mb-3 border-bottom"><span text-uppercase>History:</span> <span class="text-muted ml-1">(last 20)</span></h5>
+        <div v-if="!error.collapsed" class="flex-1">
+          <div class="ml-5 border-1 rounded p-3">
+            <div class="mb-3 border-bottom-1"><span>History:</span> <span class="font-light ml-1">(last 20)</span></div>
             <div v-for="historyError in error.latestErrors" :key="historyError.id" class="border-bottom mb-3">
-              <h6><span class="text-muted">Date:</span>
-                <span class="ml-1">{{ error.lastSeen | date }}</span>
-              </h6>
-              <pre class="bg-light p-3">{{ formatJson(historyError.serverBody) }}</pre>
+              <div>
+                <span>Date:</span>
+                <span class="ml-1">{{ error.lastSeen }}</span>
+              </div>
+              <pre class="bg-light p-3" style="max-width: 100%;">{{ historyError.serverBody }}</pre>
             </div>
           </div>
         </div>
@@ -72,40 +102,6 @@ limitations under the License.
     </div>
   </div>
 </template>
-
-<script>
-import StressTestsService from "@/services/StressTestsService";
-
-export default {
-  name: "ErrorsPage",
-  data() {
-    return {
-      loading: true,
-      errors: [],
-    };
-  },
-  mounted() {
-    this.errors = this.loadErrors();
-  },
-  methods: {
-    loadErrors() {
-      this.loading = true;
-      StressTestsService.getErrors()
-          .then((errors) => {
-            this.errors = errors.map((er) => Object.assign({collapsed: true}, er))
-            this.loading = false;
-          });
-    },
-    formatJson(stringJson) {
-      return JSON.stringify(JSON.parse(stringJson), null, 2)
-    },
-    collapseFlip(error) {
-      error.collapsed = !error.collapsed;
-      this.errors = this.errors.map((er) => er);
-    }
-  }
-}
-</script>
 
 <style scoped>
 

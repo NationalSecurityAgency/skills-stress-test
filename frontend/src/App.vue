@@ -13,33 +13,24 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+<script setup>
+import HeaderNav from "@/components/HeaderNav.vue";
+
+</script>
+
 <template>
-  <div id="app">
-    <!--    <img alt="Vue logo" src="./assets/logo.png">-->
-    <!--    <HelloWorld msg="Welcome to Your Vue.js App"/>-->
-    <header-nav/>
-    <div class="container my-3">
-      <router-view/>
+  <div>
+    <HeaderNav />
+    <div style="left: 20%; right: 20%;" class="absolute" >
+      <router-view />
     </div>
   </div>
 </template>
-
-<script>
-import HeaderNav from "@/components/HeaderNav";
-export default {
-  name: 'App',
-  components: {
-    HeaderNav,
-  },
-}
-</script>
-
 <style>
-#app {
+body {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
 }
 </style>

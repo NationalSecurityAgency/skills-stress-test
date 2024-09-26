@@ -13,72 +13,62 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+<script setup>
+import NumberFilter from "@/filters/NumberFilter.js";
+import DateFormatter from '@/filters/DateFilter.js';
+import ChartAvgLatencyTimechart from "@/components/charts/ChartAvgLatencyTimechart.vue";
+import GroupByExecTimeChart from "@/components/charts/GroupByExecTimeChart.vue";
+import SingleStatCard from "@/components/metrics/SingleStatCard.vue";
+import ResultExaplanationChart from "@/components/charts/ResultExaplanationChart.vue";
+
+defineProps(['reportSkillsRes', 'startTimestamp', 'title', 'disableResCharts']);
+
+const formatNum = (numVal) => {
+  return NumberFilter.format(numVal);
+};
+
+const formatDate = (dateVal) => {
+  return DateFormatter.format(dateVal);
+}
+</script>
+
 <template>
-  <div v-if="reportSkillsRes">
-    <h3 class="text-center text-md-left border-bottom text-info font-weight-bold text-uppercase">
-      <div class="row">
-        <div class="col">
+  <div v-if="reportSkillsRes" class="mt-8">
+    <div class="flex border-bottom-1 text-surface uppercase">
+        <div class="flex-1 font-bold text-3xl">
           {{ title }}
         </div>
-        <div class="col-md text-center text-md-right">
-          <h5 class="text-muted text-uppercase text-md-right">
-            Started: <span class="text-dark">{{ startTimestamp | date }}</span>
-          </h5>
+        <div class="text-xl">
+          Started: <span>{{ formatDate(startTimestamp) }}</span>
         </div>
-      </div>
-    </h3>
+    </div>
 
-    <div class="row mb-4">
-      <div class="col-md mt-2">
-        <single-stat-card title="# Events" :value="reportSkillsRes.totalEvents" icon="calculator" class="text-primary border-left-primary"/>
+    <div class="flex gap-2 mt-4 mb-4">
+      <div class="flex-1">
+        <SingleStatCard title="# Events" :value="reportSkillsRes.totalEvents" icon="pi-calculator" class="text-primary border-left-primary"/>
       </div>
-      <div class="col-md mt-2">
-        <single-stat-card title="Overall Latency Avg." :value="reportSkillsRes.avgEventResponse" icon="calendar2-check" class="text-success border-left-success"/>
+      <div class="flex-1">
+        <SingleStatCard title="Overall Latency Avg." :value="reportSkillsRes.avgEventResponse" icon="pi-calendar" class="text-success border-left-success"/>
       </div>
-      <div class="col mt-2">
-        <single-stat-card title="Last 1k Latency Avg." :value="reportSkillsRes.avgEventResponseLast1k" icon="alarm"  class="text-warning border-left-warning"/>
+      <div class="flex-1">
+        <SingleStatCard title="Last 1k Latency Avg." :value="reportSkillsRes.avgEventResponseLast1k" icon="pi-bell"  class="text-warning border-left-warning"/>
       </div>
     </div>
 
     <div>
-      <chart-avg-latency-timechart :time-series="reportSkillsRes.historyOfAvgLatencyPer1k"/>
+      <ChartAvgLatencyTimechart :time-series="reportSkillsRes.historyOfAvgLatencyPer1k"/>
     </div>
 
-    <div class="row mt-3">
-      <div class="col-md-6 mt-2">
-        <group-by-exec-time-chart title="Overall Latency Breakdown"  :grouped-exec-times="reportSkillsRes.groupedExecTimes"/>
-      </div>
-      <div v-if="!disableResCharts" class="col-md-6 mt-2">
-        <result-exaplanation-chart title="Overall Result Explanations" :explanation-counts="reportSkillsRes.explanationCounts" class="h-100"/>
-      </div>
-      <div class="col-md-6 mt-2">
-        <group-by-exec-time-chart title="Last 1k Latency Breakdown" :grouped-exec-times="reportSkillsRes.groupedExecTimesLast1k"/>
-      </div>
-      <div v-if="!disableResCharts" class="col-md-6 mt-2">
-        <result-exaplanation-chart title="Last 1k Result Explanations" :explanation-counts="reportSkillsRes.explanationCountsLast1k" class="h-100"/>
-      </div>
+    <div class="flex gap-2 mt-3">
+      <GroupByExecTimeChart title="Overall Latency Breakdown"  :grouped-exec-times="reportSkillsRes.groupedExecTimes" class="flex-1"/>
+      <ResultExaplanationChart v-if="!disableResCharts" title="Overall Result Explanations" :explanation-counts="reportSkillsRes.explanationCounts" class="flex-1"/>
+    </div>
+    <div class="flex gap-2 mt-3">
+      <GroupByExecTimeChart title="Last 1k Latency Breakdown" :grouped-exec-times="reportSkillsRes.groupedExecTimesLast1k" class="flex-1"/>
+      <ResultExaplanationChart v-if="!disableResCharts" title="Last 1k Result Explanations" :explanation-counts="reportSkillsRes.explanationCountsLast1k" class="flex-1"/>
     </div>
   </div>
 </template>
-
-<script>
-import NumberFilter from "@/filters/NumberFilter";
-import ChartAvgLatencyTimechart from "@/components/charts/ChartAvgLatencyTimechart";
-import GroupByExecTimeChart from "@/components/charts/GroupByExecTimeChart";
-import SingleStatCard from "@/components/metrics/SingleStatCard";
-import ResultExaplanationChart from "@/components/charts/ResultExaplanationChart";
-
-export default {
-  name: "StressTestsMetrics",
-  components: {ResultExaplanationChart, SingleStatCard, GroupByExecTimeChart, ChartAvgLatencyTimechart},
-  props: ['reportSkillsRes', 'startTimestamp', 'title', 'disableResCharts'],
-  methods: {
-    formatNum(numVal) {
-      return NumberFilter(numVal);
-    },
-  },
-}
-</script>
 
 <style scoped>
 .border-left-primary {

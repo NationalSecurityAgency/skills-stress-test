@@ -13,25 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Vue from 'vue'
+import { createApp } from 'vue';
 import App from './App.vue'
-import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue'
-import VueApexCharts from 'vue-apexcharts';
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
-import './filters/NumberFilter';
-import './filters/DateFilter';
-import './filters/TimePassedFilter';
+import VueApexCharts from 'vue3-apexcharts';
 import router from './router';
+import PrimeVue from 'primevue/config';
+import Aura from '@primevue/themes/aura';
+import Button from "primevue/button"
+import InputNumber from 'primevue/inputnumber';
+import InputText from 'primevue/inputtext';
+import Checkbox from 'primevue/checkbox';
+import Card from 'primevue/card';
+import ToggleButton from 'primevue/togglebutton';
+import ToggleSwitch from 'primevue/toggleswitch';
 
-Vue.use(BootstrapVue)
-Vue.use(BootstrapVueIcons)
-Vue.use(VueApexCharts);
-Vue.config.productionTip = false
+import 'primeflex/primeflex.css';
+import 'primeicons/primeicons.css';
 
-Vue.component('apexchart', VueApexCharts);
+const app = createApp(App);
+app.use(router);
+app.use(VueApexCharts);
+app.use(PrimeVue, {
+    theme: {
+        preset: Aura,
+        options: {
+            darkModeSelector: '.fake-selector'
+        }
+    }
+});
+app.component('Button', Button);
+app.component('InputNumber', InputNumber);
+app.component('InputText', InputText);
+app.component('Checkbox', Checkbox);
+app.component('Card', Card);
+app.component('ToggleButton', ToggleButton);
+app.component('ToggleSwitch', ToggleSwitch);
 
-new Vue({
-  render: h => h(App),
-  router,
-}).$mount('#app')
+app.mount('#app')
+
+// Vue.config.productionTip = false

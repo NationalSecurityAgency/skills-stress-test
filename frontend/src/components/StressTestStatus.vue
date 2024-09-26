@@ -28,20 +28,21 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+<script setup>
+import StressTestsMetrics from "@/components/StressTestsMetrics.vue";
+
+defineProps(['status', 'running']);
+</script>
+
 <template>
   <div v-if="status">
-
-    <div class="text-left text-uppercase text-info mt-5 border-bottom">
-      <div class="row">
-        <div class="col">
-          <h2 class="font-weight-bold">
+    <div class="text-left uppercase mt-5 border-bottom-1 text-3xl text-surface pb-2">
+      <div class="flex">
+        <div class="flex-1 font-bold">
             STRESS TEST RUN
-          </h2>
         </div>
-        <div class="col-md text-center text-md-right">
-          <h5 class="text-muted">
-            Errors: <router-link to="/errors"><span class="text-warning">{{ status.numErrors }}</span></router-link> <span class="d-none d-md-inline mx-2">|</span> Running: <span class="text-success">{{ running || false }}</span>
-          </h5>
+        <div>
+          Errors: <router-link to="/errors"><span class="text-warning">{{ status.numErrors }}</span></router-link> <span class="d-none d-md-inline mx-2">|</span> Running: <span class="text-success">{{ running || false }}</span>
         </div>
       </div>
     </div>
@@ -55,23 +56,12 @@ limitations under the License.
                               :disable-res-charts="true"
                               :start-timestamp="status.startTimestamp" title="Client Display"/>
       </div>
-      <div v-if="!status.reportSkillsRes && !status.clientDisplayStats" class="text-muted">
+      <div v-if="!status.reportSkillsRes && !status.clientDisplayStats" class="font-light">
         No Runs Yet...
       </div>
     </div>
   </div>
 </template>
-
-<script>
-
-import StressTestsMetrics from "@/components/StressTestsMetrics";
-
-export default {
-  name: "StressTestStatus",
-  components: {StressTestsMetrics},
-  props: ['status', 'running'],
-}
-</script>
 
 <style scoped>
 

@@ -13,29 +13,22 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+<script setup>
+
+</script>
+
 <template>
-    <div>
-        <b-navbar toggleable="lg" type="dark" variant="info">
-          <b-navbar-brand>
-            <router-link to="/" class="text-white"><b-icon icon="hammer" class="mr-1" />SkillTree Stress Tests</router-link>
-          </b-navbar-brand>
-          <b-collapse id="nav-collapse" is-nav>
-            <b-navbar-nav>
-              <b-nav-item>
-                <router-link to="/errors" class="text-white">Errors</router-link>
-              </b-nav-item>
-            </b-navbar-nav>
-          </b-collapse>
-        </b-navbar>
+    <div class="flex gap-4 header p-3">
+      <router-link to="/" class="text-white text-2xl">
+        <i class="pi pi-hammer" style="font-size: 1rem"></i>
+        SkillTree Stress Tests
+      </router-link>
+      <router-link to="/errors" class="text-white text-xl">Errors</router-link>
     </div>
 </template>
 
-<script>
-    export default {
-        name: "HeaderNav",
-    }
-</script>
-
 <style scoped>
-
+.header {
+  background-color: #17a2b8 !important
+}
 </style>
