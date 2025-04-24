@@ -38,7 +38,7 @@
     "eslint-plugin-vue": "7.7.0",
     "license-check-and-add": "4.0.3",
     "license-checker": "25.0.1",
-    "vite": "5.4.16"
+    "vite": "5.4.18"
   },
   "eslintConfig": {
     "root": true,
