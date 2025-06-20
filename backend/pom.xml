@@ -19,6 +19,10 @@
         <commons.text>1.10.0</commons.text>
         <gmavenplus.plugin.version>2.1.0</gmavenplus.plugin.version>
         <java.version>19</java.version>
+
+        <!--  TODO: Temporary override spring boot versions, remove once spring boot upgrades these versions -->
+        <spring-framework.version>6.2.8</spring-framework.version>
+        <tomcat.version>10.1.42</tomcat.version>
     </properties>
 
     <dependencies>
