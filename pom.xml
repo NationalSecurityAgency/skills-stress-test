@@ -14,12 +14,15 @@
     </modules>
     <properties>
         <node.version>v20.11.0</node.version>
+
+        <!--  TODO: Temporary override spring boot versions, remove once spring boot upgrades these versions -->
+        <commons-lang3.version>3.18.0</commons-lang3.version>
     </properties>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.6</version>
+        <version>3.4.7</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
