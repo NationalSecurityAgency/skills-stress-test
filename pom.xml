@@ -17,13 +17,12 @@
 
         <!--  TODO: Temporary override spring boot versions, remove once spring boot upgrades these versions -->
         <commons-lang3.version>3.18.0</commons-lang3.version>
-        <tomcat.version>10.1.44</tomcat.version>
     </properties>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.4</version>
+        <version>3.5.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
