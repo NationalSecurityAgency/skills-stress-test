@@ -41,7 +41,7 @@ jobs:
     - uses: actions/setup-java@v5
       with:
         distribution: 'temurin'
-        java-version: ' ${{ env.JAVA_VERSION }}
+        java-version: ${{ env.JAVA_VERSION }}
 
     - name: Print Versions
       run: |
