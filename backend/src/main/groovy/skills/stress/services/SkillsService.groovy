@@ -18,18 +18,18 @@ package skills.stress.services
 import callStack.profiler.Profile
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
-import org.apache.commons.io.IOUtils
 import org.springframework.http.*
 import org.springframework.http.client.ClientHttpResponse
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
+import org.springframework.util.StreamUtils
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.ResponseErrorHandler
 import org.springframework.web.client.RestTemplate
 import skills.stress.RestTemplateHelper
 import skills.stress.errors.ErrorTracker
 
-import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets
 
 @Slf4j
 class SkillsService {
@@ -49,13 +49,12 @@ class SkillsService {
 
         this.pkiMode = pkiMode
 //        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-        restTemplate.setErrorHandler(new ResponseErrorHandler() {
-            @Override
-            boolean hasError(ClientHttpResponse clientHttpResponse) throws IOException {
+        restTemplate.errorHandler = [
+            hasError: { ClientHttpResponse clientHttpResponse ->
                 if (clientHttpResponse.getStatusCode() != HttpStatus.OK) {
                     StringBuilder msg = new StringBuilder()
                     HttpStatus status = clientHttpResponse.getStatusCode();
-                    String body = IOUtils.toString(clientHttpResponse.getBody(), Charset.defaultCharset())
+                    String body = StreamUtils.copyToString(clientHttpResponse.getBody(), StandardCharsets.UTF_8)
                     String response = clientHttpResponse.getStatusText();
                     msg.append("Status code: [" + status + "]\n");
                     msg.append("Response: [" + response + "]\n");
@@ -67,24 +66,18 @@ class SkillsService {
                     return true
                 }
                 return false
-            }
+            },
 
-            @Override
-            void handleError(ClientHttpResponse clientHttpResponse) throws IOException {
-
-            }
-
-            @Override
-            void handleError(URI url, HttpMethod method, ClientHttpResponse clientHttpResponse) throws IOException {
+            handleError: { URI url, HttpMethod method, ClientHttpResponse clientHttpResponse ->
                 StringBuilder msg = new StringBuilder()
                 msg.append("RestTemplate go an error for [${method}] => [${url}]\n")
                 msg.append("Status code: [" + clientHttpResponse.getStatusCode() + "]\n");
                 msg.append("Response: [" + clientHttpResponse.getStatusText() + "]\n");
-                msg.append("Body: " + IOUtils.toString(clientHttpResponse.getBody(), Charset.defaultCharset()));
+                msg.append("Body: " + StreamUtils.copyToString(clientHttpResponse.getBody(), StandardCharsets.UTF_8))
 //                log.error(msg.toString());
                 throw new HttpClientErrorException(clientHttpResponse.statusCode, msg.toString())
             }
-        })
+        ] as ResponseErrorHandler
 
         if (!pkiMode) {
             auth("user1")

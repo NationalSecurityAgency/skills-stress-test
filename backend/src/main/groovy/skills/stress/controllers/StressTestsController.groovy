@@ -16,28 +16,23 @@
 package skills.stress.controllers
 
 import groovy.util.logging.Slf4j
+import jakarta.annotation.PostConstruct
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
 import org.springframework.http.MediaType
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.ResponseBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import skills.stress.HitSkillsHard
 import skills.stress.errors.ErrorTracker
 import skills.stress.model.StatusRes
 import skills.stress.model.StressTestParams
 
-import jakarta.annotation.PostConstruct
-
 @RestController
 @RequestMapping("/stress")
-@EnableAutoConfiguration(exclude = [SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class])
+@EnableAutoConfiguration(excludeName = [
+    "org.springframework.boot.security.autoconfigure.web.servlet.SecurityAutoConfiguration",
+    "org.springframework.boot.security.autoconfigure.actuate.web.servlet.ManagementWebSecurityAutoConfiguration"
+])
 @Slf4j
 class StressTestsController {
 

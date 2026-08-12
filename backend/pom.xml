@@ -4,21 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>skills</groupId>
-        <artifactId>skills-test</artifactId>
+        <artifactId>skills-stress-test</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <artifactId>skills-stress-test</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <artifactId>backend</artifactId>
     <name>backend</name>
-    <description>Demo project for Spring Boot</description>
-
-    <properties>
-        <joda.time.version>2.10.10</joda.time.version>
-        <commons.io>2.14.0</commons.io>
-        <commons.text>1.10.0</commons.text>
-        <gmavenplus.plugin.version>2.1.0</gmavenplus.plugin.version>
-        <java.version>19</java.version>
-    </properties>
 
     <dependencies>
         <dependency>
@@ -26,14 +16,13 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.groovy</groupId>
-            <artifactId>groovy</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.groovy</groupId>
-            <artifactId>groovy-json</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-restclient</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -51,7 +40,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -59,22 +48,15 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
-        </dependency>
-        <!-- TODO : remove this dependency when spring-boot-starter-websocket upgrades to 6.2.12 or higher -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-websocket</artifactId>
-            <version>6.2.19</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
         <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>${commons.io}</version>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy-json</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -86,22 +68,10 @@
             <artifactId>httpclient5</artifactId>
         </dependency>
 
-        <!-- for embedded CSP -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>${commons-lang3.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>${joda.time.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>dev.skilltreeplatform</groupId>
             <artifactId>call-stack-profiler</artifactId>
-            <version>1.1.4</version>
+            <version>1.1.6</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.logging.log4j</groupId>
@@ -110,6 +80,10 @@
                 <exclusion>
                     <groupId>org.apache.logging.log4j</groupId>
                     <artifactId>log4j-slf4j-impl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -134,7 +108,10 @@
             <plugin>
                 <groupId>org.codehaus.gmavenplus</groupId>
                 <artifactId>gmavenplus-plugin</artifactId>
-                <version>${gmavenplus.plugin.version}</version>
+                <version>${gmavenplus-plugin.version}</version>
+                <configuration>
+                    <targetBytecode>${java.version}</targetBytecode>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
