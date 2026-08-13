@@ -42,20 +42,31 @@ class WebSocketClientManager {
         clientLock.readLock().lock()
         try {
             WebSocketClient webSocketClient = clientIdToWebSocketClient.get(key)
-            if(!webSocketClient) {
+            if (!webSocketClient || !webSocketClient.isConnected()) {
                 clientLock.readLock().unlock()
                 clientLock.writeLock().lock()
                 try {
                     //re-check just in case another thread changed the state before we could acquire the write lock
                     webSocketClient = clientIdToWebSocketClient.get(key)
-                    if(!webSocketClient && clientCount < maxClients) {
+                    boolean needsNew = !webSocketClient
+                    if (webSocketClient && !webSocketClient.isConnected()) {
+                        // stale connection — evict it and reclaim the slot
+                        log.warn("Evicting stale WebSocket connection for user [{}] project [{}]", user, project)
+                        webSocketClient.close()
+                        clientIdToWebSocketClient.remove(key)
+                        userToClientIdCache.get(user)?.remove(key)
+                        clientCount--
+                        webSocketClient = null
+                        needsNew = true
+                    }
+                    if (needsNew && clientCount < maxClients) {
                         webSocketClient = new WebSocketClient(userId: user, projId: project, serviceUrl: skillsService.getServiceUrl(), skillsService: skillsService)
                         webSocketClient = webSocketClient.init(pkiMode)
                         userToClientIdCache.add(user, key)
                         clientIdToWebSocketClient.put(key, webSocketClient)
                         clientCount++
                     }
-                }finally {
+                } finally {
                     clientLock.writeLock().unlock()
                     clientLock.readLock().lock()
                 }

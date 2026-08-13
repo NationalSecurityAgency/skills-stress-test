@@ -87,6 +87,11 @@ class WebSocketClient {
                 session.subscribe(destination, this)
                 log.debug("subscribed to [${destination}]")
             }
+
+            @Override
+            void handleTransportError(StompSession session, Throwable exception) {
+                log.warn("WebSocket transport error for user [{}] project [{}]: {}", userId, projId, exception.getMessage())
+            }
         }
 
         WebSocketHttpHeaders headers = new WebSocketHttpHeaders()
@@ -164,6 +169,10 @@ class WebSocketClient {
         } else {
             return storeTypePropertyValue
         }
+    }
+
+    boolean isConnected() {
+        return stompSession?.isConnected() ?: false
     }
 
     void close() {
