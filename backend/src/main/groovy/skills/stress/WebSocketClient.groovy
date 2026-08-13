@@ -115,12 +115,14 @@ class WebSocketClient {
         }
         String wsHostAndPath = serviceUrl.replaceAll(/http(s)?:\/\//, '')
         String url = "${wsProtocol}://${wsHostAndPath}/skills-websocket"
+        log.debug("connecting to [{}]", url)
         CompletableFuture<StompSession> future = stompClient.connectAsync(url, headers, connectHeaders, sessionHandler)
         wait { future.isDone() }
         if (!future.isDone()) {
             throw new IllegalStateException("Failed to create websocket connection to [${url}]. Please see the test's logs")
         }
         stompSession = future.get()
+        log.info("websocket connection established to [{}]", url)
         return this
     }
 
