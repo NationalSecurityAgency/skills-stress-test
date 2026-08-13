@@ -17,7 +17,6 @@ package skills.stress
 
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.Validate
-import org.apache.tomcat.websocket.Constants
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
@@ -62,8 +61,7 @@ class WebSocketClient {
         StandardWebSocketClient client = new StandardWebSocketClient()
         List<Transport> transports = []
         if (pkiAuth || serviceUrl.startsWith("https")) {
-            def props = [(Constants.SSL_CONTEXT_PROPERTY) :  loadSslContext()]
-            client.setUserProperties(props)
+            client.setSslContext(loadSslContext())
         }
         transports.add(new WebSocketTransport(client))
         SockJsClient sockJsClient = new SockJsClient(transports)
