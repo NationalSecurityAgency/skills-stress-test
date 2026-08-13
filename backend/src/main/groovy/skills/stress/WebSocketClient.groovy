@@ -78,13 +78,14 @@ class WebSocketClient {
             @Override
             void handleFrame(StompHeaders headers, @Nullable Object payload) {
                 String result = (String) payload
-                log.debug("Got result: $result")
+                log.trace("Got result: $result")
             }
 
             @Override
             void afterConnected(StompSession session, StompHeaders connectedHeaders) {
-                session.subscribe("/user/${userId}/queue/${projId}-skill-updates", this)
-                log.info("subscribed to /user/${userId}/queue/${projId}-skill-updates")
+                String destination = "/user/queue/${projId}-skill-updates";
+                session.subscribe(destination, this)
+                log.debug("subscribed to [${destination}]")
             }
         }
 
