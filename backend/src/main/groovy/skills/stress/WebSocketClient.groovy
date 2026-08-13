@@ -45,6 +45,7 @@ import javax.net.ssl.TrustManager
 import java.lang.reflect.Type
 import java.security.KeyStore
 import java.security.SecureRandom
+import java.util.concurrent.CompletableFuture
 
 @Slf4j
 class WebSocketClient {
@@ -55,6 +56,7 @@ class WebSocketClient {
     SkillsService skillsService
 
     private WebSocketStompClient stompClient
+    StompSession stompSession
     private static volatile SSLContext cachedContext
 
     WebSocketClient init(boolean pkiAuth) {
@@ -87,38 +89,44 @@ class WebSocketClient {
         }
 
         WebSocketHttpHeaders headers = new WebSocketHttpHeaders()
+        StompHeaders connectHeaders = new StompHeaders()
         if (!pkiAuth) {
             String clientSecret = skillsService.getClientSecret(projId)
-            String serviceTokenUrl = "${serviceUrl}/oauth/token";
+            String serviceTokenUrl = "${serviceUrl}/oauth/token"
 
-            RestTemplate oAuthRestTemplate = new RestTemplate(RestTemplateHelper.getTrustAllRequestFactory());
-            oAuthRestTemplate.setInterceptors(Arrays.asList(new BasicAuthenticationInterceptor(projId, clientSecret)));
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+            RestTemplate oAuthRestTemplate = new RestTemplate(RestTemplateHelper.getTrustAllRequestFactory())
+            oAuthRestTemplate.setInterceptors(Arrays.asList(new BasicAuthenticationInterceptor(projId, clientSecret)))
+            HttpHeaders httpHeaders = new HttpHeaders()
+            httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED)
 
-            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            body.add("grant_type", "client_credentials");
-            body.add("proxy_user", userId);
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>()
+            body.add("grant_type", "client_credentials")
+            body.add("proxy_user", userId)
 
-            ResponseEntity<Map> responseEntity = oAuthRestTemplate.postForEntity(serviceTokenUrl, new HttpEntity<>(body, httpHeaders), Map.class);
+            ResponseEntity<Map> responseEntity = oAuthRestTemplate.postForEntity(serviceTokenUrl, new HttpEntity<>(body, httpHeaders), Map.class)
 
-            String userToken = responseEntity.getBody().get("access_token");
-            headers.add('Authorization', "Bearer ${userToken}")
+            String userToken = responseEntity.getBody().get("access_token")
+            connectHeaders.add('Authorization', "Bearer ${userToken}")
         }
 
         String wsProtocol = "ws"
         if (serviceUrl.startsWith("https")) {
             wsProtocol = "wss"
         }
-        String wsUrl = serviceUrl.replaceAll(/http(s)?:\/\//, '')
-        stompClient.connect("${wsProtocol}://${wsUrl}/skills-websocket", headers, sessionHandler)
-
+        String wsHostAndPath = serviceUrl.replaceAll(/http(s)?:\/\//, '')
+        String url = "${wsProtocol}://${wsHostAndPath}/skills-websocket"
+        CompletableFuture<StompSession> future = stompClient.connectAsync(url, headers, connectHeaders, sessionHandler)
+        wait { future.isDone() }
+        if (!future.isDone()) {
+            throw new IllegalStateException("Failed to create websocket connection to [${url}]. Please see the test's logs")
+        }
+        stompSession = future.get()
         return this
     }
 
     private SSLContext loadSslContext() {
         if (!cachedContext) {
-            SSLContext sslContext = SSLContext.getInstance("TLS");
+            SSLContext sslContext = SSLContext.getInstance("TLS")
             KeyManagerFactory kmf = null
             TrustManager tm = new AcceptEverythingTrustManager()
 
@@ -130,7 +138,7 @@ class WebSocketClient {
                 Validate.notNull(keyPass, "javax.net.ssl.keyStorePassword must be configured")
                 keyStore.load(new FileInputStream(configuredKeyStore), keyPass.toCharArray())
 
-                kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+                kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm())
                 kmf.init(keyStore, keyPass.toCharArray())
             }
 
@@ -155,8 +163,21 @@ class WebSocketClient {
         }
     }
 
-    public void close() {
+    void close() {
+        stompSession?.disconnect()
         this.stompClient?.stop()
     }
 
+    static boolean wait(Closure closure) {
+        wait(60, closure)
+    }
+
+    static boolean wait(int secsToWait, Closure closure) {
+        long start = System.currentTimeMillis()
+        while(!closure.call() && (System.currentTimeMillis() - start) < (secsToWait * 1000) ) {
+            Thread.sleep(250)
+        }
+
+        return closure.call()
+    }
 }
