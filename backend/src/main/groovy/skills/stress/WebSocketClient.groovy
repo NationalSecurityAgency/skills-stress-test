@@ -176,7 +176,9 @@ class WebSocketClient {
     }
 
     void close() {
-        stompSession?.disconnect()
+        if (stompSession?.isConnected()) {
+            stompSession.disconnect()
+        }
         this.stompClient?.stop()
     }
 
